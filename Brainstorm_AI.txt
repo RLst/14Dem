@@ -1,0 +1,83 @@
+Required data that the bots will need access to so I know the required fields to enter into the AI agent
+• Random positions on the map?
+• Opponent position
+	List of all opponents
+	Distance from the opponent
+• Obstacles
+	Raycast fan
+• CharacterController
+	Move
+	Jump
+	Sprint
+	Crouch
+• Current Target Opponent
+•
+
+
+Player : Unit	//Player controlled
+
+Team { South, North }
+Bot : Unit
+	Bot currentTarget
+	Unit[] allUnits
+	Unit[] teamMates
+
+Unit
+	Team team
+
+BehaviourAgent
+	Node rootNode
+	Awake()
+	Start()
+	FixedTickRoutine()
+	Update()
+	Tick()
+	OnDisable()
+	OnDestroy()
+
+enum TickMode { Normal, Fixed, Manual }
+BehaviourDirector
+	tickMode
+	agents
+	+ Tick()
+
+enum NodeState { Aborted, Suspended, None, Failure = 0, Success = 1, Pending}
+abstract Node
+	NodeState state
+	Node parent
+	virtual bool hasParent
+	abstract bool hasChild
+	BehaviourAgent agent;	//This is injected in by the agent
+	protected GameObject gameObject => agent.gameObject;
+	protected Transform transform => agent.transform;
+
+	virtual OnAwaken(BehaviourAgent)
+	virtual OnInitiate(BehaviourAgent)
+	abstract NodeState OnExecute(BehaviourAgent)
+	virtual OnPause(BehaviourAgent)
+	virtual OnShutdown(BehaviourAgent)
+
+abstract Composite : Node
+	List<Node> children
+	override bool hasChild = children.Count > 0
+	internal override void OnAwaken(), OnInitiate(), OnPreExecute()...
+	{
+		foreach (var c in children)
+			c.OnAwake(), OnInitiate()...
+	}
+
+Selector : Composite
+Sequence : Composite
+
+Root : Selector
+
+abstract Decorator : Node
+	Node child
+	override OnAwaken() => child?.OnAwaken()
+
+abstract Leaf : Node
+	protected internal override NodeState OnExecute(BehaviourAgent)
+
+Action : Leaf
+
+Condition : Leaf

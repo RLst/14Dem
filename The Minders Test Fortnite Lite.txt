@@ -1,0 +1,119 @@
+The Minders, Test
+
+TPS gameplay test mechanics:
+1. Character feature:
+- Fully humanoid rig with animations. can use external source
+	2-3h
+- Character can jump, crouch and strafe right/left/forward/backward.
+	2h
+- Character can sprint.
+	1h
+- Character is equip with two weapons
+	2h
+  + Rifle. Standard M4A1 with simple aim (no aim dot).
+  	1h
+  + Sniper. AWP with aim dot.
+  	4h
+- Character can swap between two weapons.
+	2h
+- Camera at TPS. Same angle like fortnite.
+	1h
+- Character should aim at the center of the screen.
+	1h
+- Character do NOT aim while sprinting.
+	1h
+
+2. Create a game mode. 5v5 deathmatch mode (two teams)
+	? Is this a single player game against other bots OR is it a bot only game OR you will have the ability to select?
+- No friendly fire.
+	30m
+- One kill is one point.
+	30m
+- Whichever team has the higher points win the game.
+	3h
+- Match length is 5 minutes.
+	30m
+- Draw if the two teams has the same point.
+	1.5h
+
+3. Bot behaviours:
+_ Bots move randomly around the map with navigation (obstacle avoidance).
+	Is it ok to use to use navmesh?
+- There would be two profiles of bot (randomly assigned on creating game).
+
++ Aggressive :
+   - Bot can move random on the match.
+		~ Bot can move randomly on the ground
+   - Bot detection distance would be wide (not limited by the view range).
+		? Does this mean the bot can see through walls/obstacles?
+   - Bot can shoot player upon meeting and only change the direction if the new enemy is closer)
+		? Does this mean the bot will always attack the closest enemy?
+   - Bot only shoots player if the distance is at the certain range. If not the bot would move to an optimal position to take the shot.
+		1.5h
+   - If the enemy is too far from the bot, bot would not fire but sprint to optimal position to take the shot.
+		1.5h
+
+ + Safe :
+    - Bot can move random on the match.
+    - Bot detection distance would be wide (not limited by the view range).
+    - Bot can shoot player upon meeting and only change the direction if the new enemy is closer)
+    - Bot only shoots player if the distance is at the certain range. If not the bot would move to an optimal position to take the shot.
+    - If the enemy is too far from the bot, bot would not fire but sprint to optimal position to take the shot.
+    - Bot will run away if the health is low (you decide). Preferably move to teammates. Bot would have a detection radius on the teammates.
+
+
+Bot difficulty would be dictated by :
++ Bot Speed (sprint and normally move).
++ Bot Fire accuracy.
+	• Add some slight randomness
++ Bot detection in generals
+	?
+
+4. Visual:
+- Free assets on assets store.
+	3h
+- Environment would be a simple plane with few cubes acting as obstacles.
+	1h
+
+5. UI/UX:
+- Has the button to start game.
+	30m
+- Has the options to choose the difficulty.
+	45m
+- Has the reset game => back to starting game scene.
+	1h
+- Has a button to select number of bots per side (min 5 - max 10).
+	1h
+- Has the input to get the match length. (5 - 10 minutes).
+	1h
+
+6. Controls:
+- Standard control on PC: WASD to move/strafe, Mouse to look around/ shoot. Mouse 2 to zoom. Spacebar to jump. Control to crouch.
+- Camera should occluded when closed to obstacles.
+	? Do you want the camera to move forward if the player backs into a wall? Should the camera avoid looking through obstacles?
+
+7. Other gameplay mechanics.
+- Gun should have its own recoil and visually present on both camera and trail/ bullet holes.
+	? Camera shake?
+	? Bullet trails?
+
+8. Save and load config:
+- On first time entering the game, create a game config file including:
+ 1. Current Config:		//Save these to scriptable objects
+  + Bot per side.
+  + Bot match length.
+  + Bot Difficulty (current settings)
+ 2. Player battle logs (empty if the first time entering the game):		//Save these directly to file after each match (as per instructions)
+  + Kills
+  + Deaths.
+  + Date of playing.
+  + Bot Difficulty (during the match)
+ (Only count the match actually ends. Mid game force quit is not allowed).
+
+- Load the current config on the next loading game.
+	4h
+- Save the game config to local disk.
+	2h
+- Only recreate new game config upon the last config is deleted.
+	? Only create a new game config if there is no config file found?
+	? Does the user have the option to delete the config file in game?
