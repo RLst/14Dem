@@ -7,19 +7,21 @@ namespace LeMinhHuy.AI
 	{
 		//Inspector
 		public TickMode tickMode { get; set; }
-		public float tickRate;
+		public float tickRate = 30;
 
 		//Members
 		BehaviourAgent[] allAgents;
 
 		void Awake() => allAgents = FindObjectsOfType<BehaviourAgent>();
 
+		//Manually tick all agents
 		public void ManualTick()
 		{
 			foreach (var a in allAgents)
 				a.Tick();
 		}
 
+		//Tick a specific agent
 		public void TickAgent(BehaviourAgent agent)
 		{
 			agent.Tick();

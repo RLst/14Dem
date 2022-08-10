@@ -13,6 +13,12 @@ Required data that the bots will need access to so I know the required fields to
 • Current Target Opponent
 
 
+AI Logic
+==========
+
+SEQUENCE
+
+
 Player : Unit	//Player controlled
 
 Team { South, North }
