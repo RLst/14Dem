@@ -1,0 +1,23 @@
+
+>>> Animations required
+
+Lower Body Layer (Base Layer)
+==============
+V Jump
+O Crouch, Blend
+O Locomotion, Blend
+	V Walk Forwards > Run Forwards
+	Walk Backwards > Run Backwards
+O Strafe, Blend
+	O Left > Run Left
+	O Right > Run Right
+Dying, Dead, Ragdoll?
+
+Upper Body Layer
+=============
+Weapon down
+Weapon while running
+Shoot, Procedural AnimationRig?
+	Possibly Gunplays from mixamo
+Swap weapons, Take from backpack since they're all long weapons
+Reloading?
