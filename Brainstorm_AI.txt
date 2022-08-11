@@ -12,11 +12,111 @@ Required data that the bots will need access to so I know the required fields to
 	Crouch
 • Current Target Opponent
 
-
 AI Logic
 ==========
+Entry:
 
-SEQUENCE
+Seq: Retreat
+	Cond: if health is low
+	Act: retreat to teammates
+		//Find all teammates within a specified radius, move to the average
+
+Seq: Targeting
+	Cond: if there is a new target that's in view
+	Sel:
+		Seq:
+			Cond:if there is no current target
+			Act: Set new target as current target
+		Seq:
+			Cond: if the new target is in shooting range
+			Act: set new target as current target with a delay
+
+Seq: Attack or Chase
+	Cond: if there is a current target
+	Sel:
+		Seq:
+			Cond: if current target is in range
+			Act: Attack
+		Act: Chase
+
+Act: Hunt
+	(if Health is good, no new targets, no current target)
+		//Navigate towards the average of all enemies + random direction every 3 seconds
+		//Minimum move distance, max movedistance, max random angle
+
+
+
+
+//OLD
+	Cond: isNewTargetInRangeOrView
+	Sel: SetCurrentTarget
+		Seq: SetSightTargetIfNoCurrentTarget
+			Cond: !hasCurrentTarget
+			Act: SetSightTargetAsCurrentTarget
+				SUCCESS, EXIT (stop processing further)
+		Seq: Set
+			Cond: isNewTargetDifferentToCurrentTarget
+			Act: DelaySetNewTargetToCurrentTarget
+				PENDING => SUCCESS
+
+		//Cond: TargetInSightIsCurrentTarget	//Might not be required
+
+Seq: Attack or Hunt
+	Cond: hasCurrentTarget
+	Sel: AttackIfInRange
+		Seq:
+		Cond: isCurrentTargetInRange
+		Act: Attack
+
+
+Seq: Hunt
+	Cond: hasCurrentTarget
+
+Priorities
+---------
+Sequence: Target
+	Condition: If there is a target in range and in sight, SUCCESS
+	If no current target
+		Set as the current target
+			SUCCESS
+	If current target is the target
+		FAIL
+	If new target is different target
+		Set as the next target
+		Start timer
+			PENDING
+		Once timer runs out
+		Set the current target as the new target
+		SUCCESS
+
+Sequence: Attack
+	If there is a current target
+		If within attack range
+			Attack enemy
+			SUCCESS
+		else
+			FAIL
+	else
+		FAIL
+
+Sequence: Hunt,
+	If there is a
+
+Sequence: Wander, move slightly toward player + random direction
+
+
+	Look for a closer enemy than the current one and wait a short time before switching to the new one
+Attack target enemy
+
+1. Attack enemy
+2.
+
+Entry
+	Selector
+
+		MoveRandomSeq; Moves slightly towards average of enemy team + random angle
+			Walk slightly to a random direction + toward enemy team
+
 
 
 Player : Unit	//Player controlled

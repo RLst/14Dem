@@ -10,7 +10,7 @@ namespace LeMinhHuy.AI
 		//Set owner for this node and all its children
 		public override void SetOwner(BehaviourAgent owner)
 		{
-			this.owner = owner;
+			this.SetOwner(owner);
 			foreach (var c in children)
 				c.SetOwner(owner);
 		}

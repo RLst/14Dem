@@ -6,7 +6,7 @@ namespace LeMinhHuy.AI
 		public override bool hasChild => child is object;
 		public override void SetOwner(BehaviourAgent owner)
 		{
-			this.owner = owner;
+			this.SetOwner(owner);
 			child.SetOwner(owner);
 		}
 		public override void OnAwaken() => child?.OnAwaken();

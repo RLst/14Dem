@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace LeMinhHuy.AI
@@ -11,13 +13,17 @@ namespace LeMinhHuy.AI
 			this.parent = parent;
 			this.owner = owner;
 		}
-		//Set the owner of this node and all nodes below
-		public virtual void SetOwner(BehaviourAgent owner) => this.owner = owner;
 
 		//Properties
-		public BehaviourAgent owner { get; set; }
-		protected GameObject gameObject => owner.gameObject;    //Shortcuts
+		public BehaviourAgent owner { get; private set; }
+		//Set the owner of this node and it's children
+		public virtual void SetOwner(BehaviourAgent owner) => this.owner = owner;
+
+		//Shortcuts
+		protected GameObject gameObject => owner.gameObject;
 		protected Transform transform => owner.transform;
+		// protected Dictionary<Type, object> localBlackboard => owner.localBlackboard;
+		// protected Dictionary<Type, object> globalBlackboard => BehaviourDirector.globalBlackboard;
 
 		//Members
 		public abstract bool hasChild { get; }

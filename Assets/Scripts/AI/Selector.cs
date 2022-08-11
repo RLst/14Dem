@@ -4,6 +4,8 @@ namespace LeMinhHuy.AI
 {
 	public class Selector : Composite
 	{
+		//Returns SUCCESS if one of the children returns SUCCESS OR PENDING and not process any further nodes
+		//If a child returns FAIL then it will go to the next child
 		public override NodeState OnExecute()
 		{
 			state = NodeState.Failure;
@@ -27,6 +29,6 @@ namespace LeMinhHuy.AI
 				}
 			}
 			return state;
-        }
+		}
 	}
 }
