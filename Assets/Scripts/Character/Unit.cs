@@ -4,16 +4,18 @@ using UnityEngine.InputSystem;
 
 namespace LeMinhHuy.AI
 {
-	public class Unit : MonoBehaviour, IDamageable
+	public class Unit : MonoBehaviour, IHealth, ICoreDamageable, IKillable
 	{
-		public float maxHealth = 100;
-		public float health;
+		[SerializeField] float maxHealth = 100;
+		[field: SerializeField] public float health { get; set; }
+
 		public Team team = Team.South;
+		public Transform weaponMount;
 
 		[Header("Events")]
 		public UnityEvent onKill;
 
-		public void TakeDamage(float damage)
+		public void TakeCoreDamage(float damage)
 		{
 			health -= damage;
 			if (health < 0)
@@ -28,6 +30,12 @@ namespace LeMinhHuy.AI
 			//
 
 			onKill.Invoke();
+		}
+
+		void Start()
+		{
+			Debug.Assert(weaponMount is object, "Set unit's weapon mount");
+			health = maxHealth;
 		}
 	}
 }
