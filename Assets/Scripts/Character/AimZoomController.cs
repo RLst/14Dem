@@ -5,8 +5,9 @@ using UnityEngine;
 
 namespace LeMinhHuy.AI
 {
-	public class AimController : MonoBehaviour
+	public class AimZoomController : MonoBehaviour
 	{
+		//Zooms in and reduces the aim sensitivity
 		[SerializeField] CinemachineVirtualCamera aimCamera;
 
 		[SerializeField] float aimSensitivity = 0.4f;
