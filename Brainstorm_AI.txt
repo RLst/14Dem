@@ -46,65 +46,6 @@ Act: Hunt
 
 
 
-
-//OLD
-	Cond: isNewTargetInRangeOrView
-	Sel: SetCurrentTarget
-		Seq: SetSightTargetIfNoCurrentTarget
-			Cond: !hasCurrentTarget
-			Act: SetSightTargetAsCurrentTarget
-				SUCCESS, EXIT (stop processing further)
-		Seq: Set
-			Cond: isNewTargetDifferentToCurrentTarget
-			Act: DelaySetNewTargetToCurrentTarget
-				PENDING => SUCCESS
-
-		//Cond: TargetInSightIsCurrentTarget	//Might not be required
-
-Seq: Attack or Hunt
-	Cond: hasCurrentTarget
-	Sel: AttackIfInRange
-		Seq:
-		Cond: isCurrentTargetInRange
-		Act: Attack
-
-
-Seq: Hunt
-	Cond: hasCurrentTarget
-
-Priorities
----------
-Sequence: Target
-	Condition: If there is a target in range and in sight, SUCCESS
-	If no current target
-		Set as the current target
-			SUCCESS
-	If current target is the target
-		FAIL
-	If new target is different target
-		Set as the next target
-		Start timer
-			PENDING
-		Once timer runs out
-		Set the current target as the new target
-		SUCCESS
-
-Sequence: Attack
-	If there is a current target
-		If within attack range
-			Attack enemy
-			SUCCESS
-		else
-			FAIL
-	else
-		FAIL
-
-Sequence: Hunt,
-	If there is a
-
-Sequence: Wander, move slightly toward player + random direction
-
-
 	Look for a closer enemy than the current one and wait a short time before switching to the new one
 Attack target enemy
 
@@ -118,18 +59,25 @@ Entry
 			Walk slightly to a random direction + toward enemy team
 
 
+Architecture
+=============
+Unit
+----
+enum Team { South, North }
+
+Unit
+	Team team
 
 Player : Unit	//Player controlled
 
-Team { South, North }
 Bot : Unit
 	Bot currentTarget
 	Unit[] allUnits
 	Unit[] teamMates
 
-Unit
-	Team team
 
+AI
+--
 BehaviourAgent
 	Node rootNode
 	Awake()
