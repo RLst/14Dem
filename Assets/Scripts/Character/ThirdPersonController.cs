@@ -1,4 +1,5 @@
-﻿using LeMinhHuy.Input;
+﻿using System;
+using LeMinhHuy.Input;
 using UnityEngine;
 #if ENABLE_INPUT_SYSTEM && STARTER_ASSETS_PACKAGES_CHECKED
 using UnityEngine.InputSystem;
@@ -73,20 +74,20 @@ namespace StarterAssets
 		public bool LockCameraPosition = false;
 
 		// cinemachine
-		private float _cinemachineTargetYaw;
-		private float _cinemachineTargetPitch;
+		private float cinemachineTargetYaw;
+		private float cinemachineTargetPitch;
 
 		// player
-		float _speed;
-		float _animationBlend;
-		float _targetRotation = 0.0f;
-		float _rotationVelocity;
-		float _verticalVelocity;
-		float _terminalVelocity = 53.0f;
+		float speed;
+		float animationBlend;
+		float targetRotation = 0.0f;
+		float rotationVelocity;
+		float verticalVelocity;
+		float terminalVelocity = 53.0f;
 
 		// timeout deltatime
-		float _jumpTimeoutDelta;
-		float _fallTimeoutDelta;
+		float jumpTimeoutDelta;
+		float fallTimeoutDelta;
 
 		// animation IDs
 		int HashSpeed;
@@ -118,11 +119,13 @@ namespace StarterAssets
 		Animator animator;
 		CharacterController controller;
 
-		GameObject _mainCamera;
+		GameObject mainCamera;
 		float aimSensitivity;
+		Transform t;
 
 		void Awake()
 		{
+			t = transform;
 			animator = GetComponent<Animator>();
 			controller = GetComponent<CharacterController>();
 			input = GetComponent<PlayerInputRelay>();
@@ -133,38 +136,23 @@ namespace StarterAssets
 #endif
 
 			// get a reference to our main camera
-			if (_mainCamera == null)
+			if (mainCamera == null)
 			{
-				_mainCamera = Camera.main.gameObject;
+				mainCamera = Camera.main.gameObject;
 			}
 		}
 
 		private void Start()
 		{
-			_cinemachineTargetYaw = CinemachineCameraTarget.transform.rotation.eulerAngles.y;
+			cinemachineTargetYaw = CinemachineCameraTarget.transform.rotation.eulerAngles.y;
 
 			AssignAnimationIDs();
 
 			// reset our timeouts on start
-			_jumpTimeoutDelta = JumpTimeout;
-			_fallTimeoutDelta = FallTimeout;
+			jumpTimeoutDelta = JumpTimeout;
+			fallTimeoutDelta = FallTimeout;
 		}
-
-		private void Update()
-		{
-			HandleJumpAndGravity();
-			HandleGroundCheck();
-			HandleMovement();
-		}
-
-		private void LateUpdate()
-		{
-			HandleCameraRotation();
-
-			ResetAimSensitivity();
-		}
-
-		private void AssignAnimationIDs()
+		void AssignAnimationIDs()
 		{
 			HashSpeed = Animator.StringToHash("Speed");
 			HashGrounded = Animator.StringToHash("Grounded");
@@ -173,11 +161,26 @@ namespace StarterAssets
 			HashMotionSpeed = Animator.StringToHash("MotionSpeed");
 		}
 
-		private void HandleGroundCheck()
+		void Update()
+		{
+			HandleJumpAndGravity();
+			HandleGroundCheck();
+			HandleMovement();
+		}
+
+		void LateUpdate()
+		{
+			HandleCameraRotation();
+			ResetAimSensitivity();
+		}
+		//Run right at the end in order to reset the sensitivity for the next frame
+		void ResetAimSensitivity() => aimSensitivity = 1f;
+
+		void HandleGroundCheck()
 		{
 			// set sphere position, with offset
-			Vector3 spherePosition = new Vector3(transform.position.x, transform.position.y - GroundedOffset,
-				transform.position.z);
+			Vector3 spherePosition = new Vector3(t.position.x, t.position.y - GroundedOffset,
+				t.position.z);
 			Grounded = Physics.CheckSphere(spherePosition, GroundedRadius, GroundLayers,
 				QueryTriggerInteraction.Ignore);
 
@@ -190,8 +193,11 @@ namespace StarterAssets
 
 		//Should only override for the current frame
 		public void OverrideAimSensitivity(float overrideSensitivity) => aimSensitivity = overrideSensitivity;
-		//Run right at the end in order to reset the sensitivity for the next frame
-		void ResetAimSensitivity() => aimSensitivity = 1f;
+		//Smoothly lerp toward a certain direction
+		public void LerpForwardFacing(Vector3 faceDirection, float lerpFactor = 20f)
+		{
+			t.forward = Vector3.Lerp(t.forward, faceDirection, Time.deltaTime * lerpFactor);
+		}
 		private void HandleCameraRotation()
 		{
 			// if there is an input and camera position is not fixed
@@ -200,20 +206,20 @@ namespace StarterAssets
 				//Don't multiply mouse input by Time.deltaTime;
 				float deltaTimeMultiplier = IsCurrentDeviceMouse ? 1.0f : Time.deltaTime;
 
-				_cinemachineTargetYaw += input.look.x * aimSensitivity * deltaTimeMultiplier;
-				_cinemachineTargetPitch += input.look.y * aimSensitivity * deltaTimeMultiplier;
+				cinemachineTargetYaw += input.look.x * aimSensitivity * deltaTimeMultiplier;
+				cinemachineTargetPitch += input.look.y * aimSensitivity * deltaTimeMultiplier;
 			}
 
 			// clamp our rotations so our values are limited 360 degrees
-			_cinemachineTargetYaw = ClampAngle(_cinemachineTargetYaw, float.MinValue, float.MaxValue);
-			_cinemachineTargetPitch = ClampAngle(_cinemachineTargetPitch, BottomClamp, TopClamp);
+			cinemachineTargetYaw = ClampAngle(cinemachineTargetYaw, float.MinValue, float.MaxValue);
+			cinemachineTargetPitch = ClampAngle(cinemachineTargetPitch, BottomClamp, TopClamp);
 
 			// Cinemachine will follow this target
-			CinemachineCameraTarget.transform.rotation = Quaternion.Euler(_cinemachineTargetPitch + CameraAngleOverride,
-				_cinemachineTargetYaw, 0.0f);
+			CinemachineCameraTarget.transform.rotation = Quaternion.Euler(cinemachineTargetPitch + CameraAngleOverride,
+				cinemachineTargetYaw, 0.0f);
 		}
 
-		private void HandleMovement()
+		void HandleMovement()
 		{
 			// set target speed based on move speed, sprint speed and if sprint is pressed
 			float targetSpeed = input.sprint ? SprintSpeed : MoveSpeed;
@@ -236,19 +242,19 @@ namespace StarterAssets
 			{
 				// creates curved result rather than a linear one giving a more organic speed change
 				// note T in Lerp is clamped, so we don't need to clamp our speed
-				_speed = Mathf.Lerp(currentHorizontalSpeed, targetSpeed * inputMagnitude,
+				speed = Mathf.Lerp(currentHorizontalSpeed, targetSpeed * inputMagnitude,
 					Time.deltaTime * SpeedChangeRate);
 
 				// round speed to 3 decimal places
-				_speed = Mathf.Round(_speed * 1000f) / 1000f;
+				speed = Mathf.Round(speed * 1000f) / 1000f;
 			}
 			else
 			{
-				_speed = targetSpeed;
+				speed = targetSpeed;
 			}
 
-			_animationBlend = Mathf.Lerp(_animationBlend, targetSpeed, Time.deltaTime * SpeedChangeRate);
-			if (_animationBlend < 0.01f) _animationBlend = 0f;
+			animationBlend = Mathf.Lerp(animationBlend, targetSpeed, Time.deltaTime * SpeedChangeRate);
+			if (animationBlend < 0.01f) animationBlend = 0f;
 
 			// normalise input direction
 			Vector3 inputDirection = new Vector3(input.move.x, 0.0f, input.move.y).normalized;
@@ -257,35 +263,40 @@ namespace StarterAssets
 			// if there is a move input rotate player when the player is moving
 			if (input.move != Vector2.zero)
 			{
-				_targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg + _mainCamera.transform.eulerAngles.y;
-				float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, _targetRotation, ref _rotationVelocity,
+				targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg + mainCamera.transform.eulerAngles.y;
+				float rotation = Mathf.SmoothDampAngle(t.eulerAngles.y, targetRotation, ref rotationVelocity,
 					RotationSmoothTime);
 
 				// rotate to face input direction relative to camera position
-				transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
+				t.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
 			}
 
 
-			Vector3 targetDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
+			Vector3 targetDirection = Quaternion.Euler(0.0f, targetRotation, 0.0f) * Vector3.forward;
 
 			// move the player
-			controller.Move(targetDirection.normalized * (_speed * Time.deltaTime) +
-							 new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
+			controller.Move(targetDirection.normalized * (speed * Time.deltaTime) +
+							 new Vector3(0.0f, verticalVelocity, 0.0f) * Time.deltaTime);
 
 			// update animator if using character
 			if (hasAnimator)
 			{
-				animator.SetFloat(HashSpeed, _animationBlend);
+				animator.SetFloat(HashSpeed, animationBlend);
 				animator.SetFloat(HashMotionSpeed, inputMagnitude);
 			}
 		}
 
-		private void HandleJumpAndGravity()
+		public void SetRotateOnMove(bool v)
+		{
+			throw new NotImplementedException();
+		}
+
+		void HandleJumpAndGravity()
 		{
 			if (Grounded)
 			{
 				// reset the fall timeout timer
-				_fallTimeoutDelta = FallTimeout;
+				fallTimeoutDelta = FallTimeout;
 
 				// update animator if using character
 				if (hasAnimator)
@@ -295,16 +306,16 @@ namespace StarterAssets
 				}
 
 				// stop our velocity dropping infinitely when grounded
-				if (_verticalVelocity < 0.0f)
+				if (verticalVelocity < 0.0f)
 				{
-					_verticalVelocity = -2f;
+					verticalVelocity = -2f;
 				}
 
 				// Jump
-				if (input.jump && _jumpTimeoutDelta <= 0.0f)
+				if (input.jump && jumpTimeoutDelta <= 0.0f)
 				{
 					// the square root of H * -2 * G = how much velocity needed to reach desired height
-					_verticalVelocity = Mathf.Sqrt(JumpHeight * -2f * Gravity);
+					verticalVelocity = Mathf.Sqrt(JumpHeight * -2f * Gravity);
 
 					// update animator if using character
 					if (hasAnimator)
@@ -314,20 +325,20 @@ namespace StarterAssets
 				}
 
 				// jump timeout
-				if (_jumpTimeoutDelta >= 0.0f)
+				if (jumpTimeoutDelta >= 0.0f)
 				{
-					_jumpTimeoutDelta -= Time.deltaTime;
+					jumpTimeoutDelta -= Time.deltaTime;
 				}
 			}
 			else
 			{
 				// reset the jump timeout timer
-				_jumpTimeoutDelta = JumpTimeout;
+				jumpTimeoutDelta = JumpTimeout;
 
 				// fall timeout
-				if (_fallTimeoutDelta >= 0.0f)
+				if (fallTimeoutDelta >= 0.0f)
 				{
-					_fallTimeoutDelta -= Time.deltaTime;
+					fallTimeoutDelta -= Time.deltaTime;
 				}
 				else
 				{
@@ -343,20 +354,20 @@ namespace StarterAssets
 			}
 
 			// apply gravity over time if under terminal (multiply by delta time twice to linearly speed up over time)
-			if (_verticalVelocity < _terminalVelocity)
+			if (verticalVelocity < terminalVelocity)
 			{
-				_verticalVelocity += Gravity * Time.deltaTime;
+				verticalVelocity += Gravity * Time.deltaTime;
 			}
 		}
 
-		private static float ClampAngle(float lfAngle, float lfMin, float lfMax)
+		static float ClampAngle(float lfAngle, float lfMin, float lfMax)
 		{
 			if (lfAngle < -360f) lfAngle += 360f;
 			if (lfAngle > 360f) lfAngle -= 360f;
 			return Mathf.Clamp(lfAngle, lfMin, lfMax);
 		}
 
-		private void OnDrawGizmosSelected()
+		void OnDrawGizmosSelected()
 		{
 			Color transparentGreen = new Color(0.0f, 1.0f, 0.0f, 0.35f);
 			Color transparentRed = new Color(1.0f, 0.0f, 0.0f, 0.35f);

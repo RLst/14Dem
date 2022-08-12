@@ -5,7 +5,7 @@ using UnityEngine;
 namespace LeMinhHuy.AI
 {
 	[RequireComponent(typeof(Unit), typeof(PlayerInputRelay))]
-	public class ShootController : MonoBehaviour    //Rename to weapon controller
+	public class WeaponController : MonoBehaviour    //Rename to weapon controller
 	{
 		[SerializeField] LayerMask aimLayerMask;
 
@@ -14,6 +14,10 @@ namespace LeMinhHuy.AI
 		Weapon currentWeapon;
 		int currentWeaponIndex = 0;
 
+		//Properties
+		public Vector3 aimWorldPosition { get; private set; }
+
+		//Members
 		Camera mainCam;
 		Transform position;
 		PlayerInputRelay input;
@@ -37,15 +41,40 @@ namespace LeMinhHuy.AI
 
 		void Update()
 		{
-			var aimWorldPosition = Vector3.zero;
-			var screenCenter = new Vector2(Screen.width * 0.5f, Screen.height * 0.5f);
-			var shootRay = mainCam.ScreenPointToRay(screenCenter);
-			if (Physics.Raycast(shootRay, out RaycastHit hit, 500f, aimLayerMask))
-			{
-				aimWorldPosition = hit.point;
-			}
-
+			HandleWeaponTargeting();
+			HandleWeaponFiring();
+			HandleWeaponReloading();
 			HandleWeaponSwitching();
+		}
+
+		void HandleWeaponTargeting()
+		{
+			if (input.aim)
+			{
+				aimWorldPosition = Vector3.zero;
+				var screenCenter = new Vector2(Screen.width * 0.5f, Screen.height * 0.5f);
+				var shootRay = mainCam.ScreenPointToRay(screenCenter);
+				if (Physics.Raycast(shootRay, out RaycastHit hit, 500f, aimLayerMask))
+				{
+					aimWorldPosition = hit.point;
+				}
+			}
+		}
+
+		void HandleWeaponFiring()
+		{
+			if (input.shoot)
+			{
+				currentWeapon.Fire();
+			}
+		}
+
+		void HandleWeaponReloading()
+		{
+			if (input.reload)
+			{
+				currentWeapon.Reload();
+			}
 		}
 
 		void HandleWeaponSwitching()
