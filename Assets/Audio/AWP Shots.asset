@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 938aadc39bae942eaa40ebf556c0b9c9, type: 3}
+  m_Name: AWP Shots
+  m_EditorClassIdentifier: 
+  volume: 1
+  chance: 100
+  avoidRepetitions: 1
+  clips:
+  - {fileID: 8300000, guid: 199f31986860b4c61b24b355560adb57, type: 3}
+  - {fileID: 8300000, guid: beb260149f26045c690545ce8878cf3d, type: 3}
+  - {fileID: 8300000, guid: a321a6aee0d834b95ab0bf0f37e1783e, type: 3}
+  - {fileID: 8300000, guid: b9e741eba92f54870a1cbf4dee57d60e, type: 3}
