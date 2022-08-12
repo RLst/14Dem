@@ -79,6 +79,7 @@ namespace StarterAssets
 
 		// player
 		float speed;
+		Vector2 locomotion;
 		float animationBlend;
 		float targetRotation = 0.0f;
 		float rotationVelocity;
@@ -90,7 +91,8 @@ namespace StarterAssets
 		float fallTimeoutDelta;
 
 		// animation IDs
-		int HashSpeed;
+		int HashSpeedX;
+		int HashSpeedZ;
 		int HashGrounded;
 		int HashJump;
 		int HashFreeFall;
@@ -121,7 +123,10 @@ namespace StarterAssets
 
 		GameObject mainCamera;
 		float aimSensitivity;
+		bool overrideFacing = false;
 		Transform t;
+		private float localSpeedXLerp;
+		private float localSpeedZLerp;
 
 		void Awake()
 		{
@@ -154,7 +159,8 @@ namespace StarterAssets
 		}
 		void AssignAnimationIDs()
 		{
-			HashSpeed = Animator.StringToHash("Speed");
+			HashSpeedX = Animator.StringToHash("SpeedX");
+			HashSpeedZ = Animator.StringToHash("SpeedZ");
 			HashGrounded = Animator.StringToHash("Grounded");
 			HashJump = Animator.StringToHash("Jump");
 			HashFreeFall = Animator.StringToHash("FreeFall");
@@ -171,10 +177,14 @@ namespace StarterAssets
 		void LateUpdate()
 		{
 			HandleCameraRotation();
-			ResetAimSensitivity();
+			ResetAim();
 		}
 		//Run right at the end in order to reset the sensitivity for the next frame
-		void ResetAimSensitivity() => aimSensitivity = 1f;
+		void ResetAim()
+		{
+			aimSensitivity = 1f;
+			overrideFacing = false;
+		}
 
 		void HandleGroundCheck()
 		{
@@ -196,6 +206,7 @@ namespace StarterAssets
 		//Smoothly lerp toward a certain direction
 		public void LerpForwardFacing(Vector3 faceDirection, float lerpFactor = 20f)
 		{
+			overrideFacing = true;
 			t.forward = Vector3.Lerp(t.forward, faceDirection, Time.deltaTime * lerpFactor);
 		}
 		private void HandleCameraRotation()
@@ -221,74 +232,73 @@ namespace StarterAssets
 
 		void HandleMovement()
 		{
-			// set target speed based on move speed, sprint speed and if sprint is pressed
-			float targetSpeed = input.sprint ? SprintSpeed : MoveSpeed;
+			//Walking or sprinting?
+			float finalSpeed = input.sprint ? SprintSpeed : MoveSpeed;
 
-			// a simplistic acceleration and deceleration designed to be easy to remove, replace, or iterate upon
+			//a simplistic acceleration and deceleration designed to be easy to remove, replace, or iterate upon
 
-			// note: Vector2's == operator uses approximation so is not floating point error prone, and is cheaper than magnitude
-			// if there is no input, set the target speed to 0
-			if (input.move == Vector2.zero) targetSpeed = 0.0f;
+			//if there is no input, set the target speed to 0
+			if (input.move == Vector2.zero) finalSpeed = 0.0f;  //NOTE: Vector2's == operator uses approximation so is not floating point error prone, and is cheaper than magnitude
 
 			// a reference to the players current horizontal velocity
 			float currentHorizontalSpeed = new Vector3(controller.velocity.x, 0.0f, controller.velocity.z).magnitude;
 
-			float speedOffset = 0.1f;
+			float deadzone = 0.1f;
 			float inputMagnitude = input.analogMovement ? input.move.magnitude : 1f;
 
 			// accelerate or decelerate to target speed
-			if (currentHorizontalSpeed < targetSpeed - speedOffset ||
-				currentHorizontalSpeed > targetSpeed + speedOffset)
+			if (currentHorizontalSpeed < finalSpeed - deadzone || currentHorizontalSpeed > finalSpeed + deadzone)
 			{
 				// creates curved result rather than a linear one giving a more organic speed change
 				// note T in Lerp is clamped, so we don't need to clamp our speed
-				speed = Mathf.Lerp(currentHorizontalSpeed, targetSpeed * inputMagnitude,
-					Time.deltaTime * SpeedChangeRate);
+				speed = Mathf.Lerp(currentHorizontalSpeed, finalSpeed * inputMagnitude, Time.deltaTime * SpeedChangeRate);
 
 				// round speed to 3 decimal places
 				speed = Mathf.Round(speed * 1000f) / 1000f;
 			}
 			else
 			{
-				speed = targetSpeed;
+				speed = finalSpeed;
 			}
-
-			animationBlend = Mathf.Lerp(animationBlend, targetSpeed, Time.deltaTime * SpeedChangeRate);
-			if (animationBlend < 0.01f) animationBlend = 0f;
 
 			// normalise input direction
 			Vector3 inputDirection = new Vector3(input.move.x, 0.0f, input.move.y).normalized;
 
-			// note: Vector2's != operator uses approximation so is not floating point error prone, and is cheaper than magnitude
+			//NOTE: Vector2's != operator uses approximation so is not floating point error prone, and is cheaper than magnitude
 			// if there is a move input rotate player when the player is moving
-			if (input.move != Vector2.zero)
+			if (!overrideFacing && input.move != Vector2.zero)
 			{
 				targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg + mainCamera.transform.eulerAngles.y;
-				float rotation = Mathf.SmoothDampAngle(t.eulerAngles.y, targetRotation, ref rotationVelocity,
-					RotationSmoothTime);
+				float rotation = Mathf.SmoothDampAngle(t.eulerAngles.y, targetRotation, ref rotationVelocity, RotationSmoothTime);
 
 				// rotate to face input direction relative to camera position
 				t.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
 			}
 
-
 			Vector3 targetDirection = Quaternion.Euler(0.0f, targetRotation, 0.0f) * Vector3.forward;
 
 			// move the player
-			controller.Move(targetDirection.normalized * (speed * Time.deltaTime) +
-							 new Vector3(0.0f, verticalVelocity, 0.0f) * Time.deltaTime);
+			controller.Move(targetDirection.normalized * (speed * Time.deltaTime) + new Vector3(0.0f, verticalVelocity, 0.0f) * Time.deltaTime);
 
 			// update animator if using character
 			if (hasAnimator)
 			{
-				animator.SetFloat(HashSpeed, animationBlend);
+				animationBlend = Mathf.Lerp(animationBlend, finalSpeed, Time.deltaTime * SpeedChangeRate);
+				if (animationBlend < 0.01f) animationBlend = 0f;
+
+				var localSpeedX = Vector3.Dot(targetDirection.normalized, t.right) * finalSpeed;
+				if (localSpeedX > -deadzone && localSpeedX < deadzone) localSpeedX = 0;
+				localSpeedXLerp = Mathf.Lerp(localSpeedXLerp, localSpeedX, Time.deltaTime * SpeedChangeRate);
+
+				var localSpeedZ = Vector3.Dot(targetDirection.normalized, t.forward) * finalSpeed;
+				if (localSpeedZ > -deadzone && localSpeedZ < deadzone) localSpeedZ = 0;
+				localSpeedZLerp = Mathf.Lerp(localSpeedZLerp, localSpeedZ, Time.deltaTime * SpeedChangeRate);
+
+				// animator.SetFloat(HashSpeedX, )
+				animator.SetFloat(HashSpeedX, localSpeedXLerp);
+				animator.SetFloat(HashSpeedZ, localSpeedZLerp);
 				animator.SetFloat(HashMotionSpeed, inputMagnitude);
 			}
-		}
-
-		public void SetRotateOnMove(bool v)
-		{
-			throw new NotImplementedException();
 		}
 
 		void HandleJumpAndGravity()
