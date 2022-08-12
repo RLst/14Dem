@@ -15,6 +15,7 @@ namespace LeMinhHuy.Input
 		[field: SerializeField] public bool sprint;
 		[field: SerializeField] public bool jump { get; private set; }
 		[field: SerializeField] public bool shoot { get; private set; }
+		[field: SerializeField] public bool reload { get; private set; }
 		[field: SerializeField] public bool nextWeapon { get; private set; }
 		[field: SerializeField] public bool prevWeapon { get; private set; }
 
@@ -39,6 +40,7 @@ namespace LeMinhHuy.Input
 		public void OnSprint(InputValue value) => SetSprint(value.isPressed);
 		public void OnJump(InputValue value) => SetJump(value.isPressed);
 		public void OnShoot(InputValue value) => SetShoot(value.isPressed);
+		public void OnReload(InputValue value) => SetReload(value.isPressed);
 		public void OnNextWeapon(InputValue value) => SetNextWeapon(value.isPressed);
 		public void OnPrevWeapon(InputValue value) => SetPrevWeapon(value.isPressed);
 #endif
@@ -50,6 +52,7 @@ namespace LeMinhHuy.Input
 		public void SetSprint(bool input) => sprint = input;
 		public void SetJump(bool input) => jump = input;
 		public void SetShoot(bool input) => shoot = input;
+		public void SetReload(bool input) => reload = input;
 		public void SetNextWeapon(bool input) => nextWeapon = input;
 		public void SetPrevWeapon(bool input) => prevWeapon = input;
 

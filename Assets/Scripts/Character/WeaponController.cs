@@ -18,14 +18,14 @@ namespace LeMinhHuy.AI
 		public Vector3 aimWorldPosition { get; private set; }
 
 		//Members
-		Camera mainCam;
+		Camera mainCamera;
 		Transform position;
 		PlayerInputRelay input;
 		Unit unit;
 
 		void Awake()
 		{
-			mainCam = Camera.main;
+			mainCamera = Camera.main;
 			input = GetComponent<PlayerInputRelay>();
 			unit = GetComponent<Unit>();
 		}
@@ -53,7 +53,7 @@ namespace LeMinhHuy.AI
 			{
 				aimWorldPosition = Vector3.zero;
 				var screenCenter = new Vector2(Screen.width * 0.5f, Screen.height * 0.5f);
-				var shootRay = mainCam.ScreenPointToRay(screenCenter);
+				var shootRay = mainCamera.ScreenPointToRay(screenCenter);
 				if (Physics.Raycast(shootRay, out RaycastHit hit, 500f, aimLayerMask))
 				{
 					aimWorldPosition = hit.point;
