@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace LeMinhHuy.AI
+namespace LeMinhHuy.AI.Core
 {
 	public static class GlobalBlackboard
 	{

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace LeMinhHuy.AI
+namespace LeMinhHuy.Character
 {
 	//Attach to unit body parts + colliders downstream
 	//Sends damage to the core damage

@@ -1,8 +1,6 @@
-using System;
-using System.Collections.Generic;
 using UnityEngine;
 
-namespace LeMinhHuy.AI
+namespace LeMinhHuy.AI.Core
 {
 	[System.Serializable]
 	public abstract class Node

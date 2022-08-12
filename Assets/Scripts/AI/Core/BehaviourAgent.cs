@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace LeMinhHuy.AI
+namespace LeMinhHuy.AI.Core
 {
 	public abstract class BehaviourAgent : MonoBehaviour
 	{

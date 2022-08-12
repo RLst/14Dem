@@ -1,4 +1,4 @@
-namespace LeMinhHuy.AI
+namespace LeMinhHuy.AI.Core
 {
 	//Is this really required?
 	public class Entry : Node

@@ -1,8 +1,6 @@
-using System;
 using LeMinhHuy.Utils;
-using UnityEngine;
 
-namespace LeMinhHuy.AI
+namespace LeMinhHuy.AI.Core
 {
 	public class BehaviourDirector : Singleton<BehaviourDirector>
 	{

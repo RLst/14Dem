@@ -1,3 +1,6 @@
+using LeMinhHuy.AI.Core;
+using LeMinhHuy.Character;
+
 namespace LeMinhHuy.AI
 {
 	public class HasCurrentTarget : Condition

@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace LeMinhHuy.AI
+namespace LeMinhHuy.AI.Core
 {
 	public abstract class Composite : Node
 	{
@@ -10,7 +10,7 @@ namespace LeMinhHuy.AI
 		//Set owner for this node and all its children
 		public override void SetOwner(BehaviourAgent owner)
 		{
-			this.SetOwner(owner);
+			SetOwner(owner);
 			foreach (var c in children)
 				c.SetOwner(owner);
 		}

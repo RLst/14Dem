@@ -1,6 +1,6 @@
 using System;
 
-namespace LeMinhHuy.AI
+namespace LeMinhHuy.AI.Core
 {
 	public class Selector : Composite
 	{

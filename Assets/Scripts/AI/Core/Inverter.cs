@@ -1,4 +1,4 @@
-namespace LeMinhHuy.AI
+namespace LeMinhHuy.AI.Core
 {
 	public class Inverter : Decorator
 	{

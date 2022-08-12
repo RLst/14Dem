@@ -1,4 +1,4 @@
-namespace LeMinhHuy.AI
+namespace LeMinhHuy.AI.Core
 {
 	public abstract class Decorator : Node
 	{
@@ -6,7 +6,7 @@ namespace LeMinhHuy.AI
 		public override bool hasChild => child is object;
 		public override void SetOwner(BehaviourAgent owner)
 		{
-			this.SetOwner(owner);
+			SetOwner(owner);
 			child.SetOwner(owner);
 		}
 		public override void OnAwaken() => child?.OnAwaken();

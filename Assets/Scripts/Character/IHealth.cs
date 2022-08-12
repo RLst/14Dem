@@ -1,4 +1,4 @@
-namespace LeMinhHuy.AI
+namespace LeMinhHuy.Character
 {
 	//Has health
 	public interface IHealth

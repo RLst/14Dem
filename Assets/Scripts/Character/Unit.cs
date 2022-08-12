@@ -2,13 +2,13 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
 
-namespace LeMinhHuy.AI
+namespace LeMinhHuy.Character
 {
 	[SelectionBase]
 	public class Unit : MonoBehaviour, IHealth, ICoreDamageable, IKillable
 	{
 		[SerializeField] float maxHealth = 100;
-		[field: SerializeField] public float health { get; set; } 
+		[field: SerializeField] public float health { get; set; }
 
 		public Team team = Team.South;
 		public Transform weaponMount;

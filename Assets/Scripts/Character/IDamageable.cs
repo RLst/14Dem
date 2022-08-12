@@ -1,4 +1,4 @@
-namespace LeMinhHuy.AI
+namespace LeMinhHuy.Character
 {
 	//Damages the core damage
 	public interface IDamageable

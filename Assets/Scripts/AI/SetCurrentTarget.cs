@@ -1,3 +1,5 @@
+using LeMinhHuy.AI.Core;
+using LeMinhHuy.Character;
 using UnityEngine;
 
 namespace LeMinhHuy.AI

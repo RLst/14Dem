@@ -8,7 +8,7 @@ using UnityEngine.InputSystem;
 /* Note: animations are called via the controller for both the character and capsule using animator null checks
  */
 
-namespace StarterAssets
+namespace LeMinhHuy.Character
 {
 	[RequireComponent(typeof(CharacterController))]
 #if ENABLE_INPUT_SYSTEM && STARTER_ASSETS_PACKAGES_CHECKED
@@ -18,10 +18,11 @@ namespace StarterAssets
 	{
 		[Header("Player")]
 		[Tooltip("Move speed of the character in m/s")]
-		public float MoveSpeed = 2.0f;
+		public float WalkSpeed = 3f;
 
 		[Tooltip("Sprint speed of the character in m/s")]
-		public float SprintSpeed = 5.335f;
+		public float SprintSpeed = 8f;
+		public float CrouchSpeed = 1f;
 
 		[Tooltip("How fast the character turns to face movement direction")]
 		[Range(0.0f, 0.3f)]
@@ -73,13 +74,14 @@ namespace StarterAssets
 		[Tooltip("For locking the camera position on all axis")]
 		public bool LockCameraPosition = false;
 
+		[SerializeField] float crouchLayerWeight = 0.5f;
+
 		// cinemachine
 		private float cinemachineTargetYaw;
 		private float cinemachineTargetPitch;
 
 		// player
 		float speed;
-		Vector2 locomotion;
 		float animationBlend;
 		float targetRotation = 0.0f;
 		float rotationVelocity;
@@ -91,12 +93,13 @@ namespace StarterAssets
 		float fallTimeoutDelta;
 
 		// animation IDs
-		int HashSpeedX;
-		int HashSpeedZ;
-		int HashGrounded;
-		int HashJump;
-		int HashFreeFall;
-		int HashMotionSpeed;
+		const int crouchLayerID = 2;
+		int hSpeedX;
+		int hSpeedZ;
+		int hGrounded;
+		int hJump;
+		int hFreeFall;
+		int hMotionSpeed;
 		const float _threshold = 0.01f;
 
 		//Properites
@@ -127,6 +130,7 @@ namespace StarterAssets
 		Transform t;
 		private float localSpeedXLerp;
 		private float localSpeedZLerp;
+		private float crouchSmoothWeight;
 
 		void Awake()
 		{
@@ -159,17 +163,18 @@ namespace StarterAssets
 		}
 		void AssignAnimationIDs()
 		{
-			HashSpeedX = Animator.StringToHash("SpeedX");
-			HashSpeedZ = Animator.StringToHash("SpeedZ");
-			HashGrounded = Animator.StringToHash("Grounded");
-			HashJump = Animator.StringToHash("Jump");
-			HashFreeFall = Animator.StringToHash("FreeFall");
-			HashMotionSpeed = Animator.StringToHash("MotionSpeed");
+			hSpeedX = Animator.StringToHash("SpeedX");
+			hSpeedZ = Animator.StringToHash("SpeedZ");
+			hGrounded = Animator.StringToHash("Grounded");
+			hJump = Animator.StringToHash("Jump");
+			hFreeFall = Animator.StringToHash("FreeFall");
+			hMotionSpeed = Animator.StringToHash("MotionSpeed");
 		}
 
 		void Update()
 		{
 			HandleJumpAndGravity();
+			HandleCrouching();
 			HandleGroundCheck();
 			HandleMovement();
 		}
@@ -197,7 +202,7 @@ namespace StarterAssets
 			// update animator if using character
 			if (hasAnimator)
 			{
-				animator.SetBool(HashGrounded, Grounded);
+				animator.SetBool(hGrounded, Grounded);
 			}
 		}
 
@@ -230,10 +235,38 @@ namespace StarterAssets
 				cinemachineTargetYaw, 0.0f);
 		}
 
+		void HandleCrouching()
+		{
+			if (!hasAnimator) return;
+
+			if (input.crouch)
+			{
+				crouchSmoothWeight = Mathf.Lerp(crouchSmoothWeight, crouchLayerWeight, Time.deltaTime * 20f);
+				animator.SetLayerWeight(crouchLayerID, crouchSmoothWeight);
+			}
+			else
+			{
+				crouchSmoothWeight = Mathf.Lerp(crouchSmoothWeight, 0, Time.deltaTime * 20f);
+				animator.SetLayerWeight(crouchLayerID, crouchSmoothWeight);
+			}
+		}
+
 		void HandleMovement()
 		{
 			//Walking or sprinting?
-			float finalSpeed = input.sprint ? SprintSpeed : MoveSpeed;
+			float finalSpeed;// = input.sprint ? SprintSpeed : MoveSpeed;
+			if (input.crouch)
+			{
+				finalSpeed = CrouchSpeed;
+			}
+			else if (input.sprint)
+			{
+				finalSpeed = SprintSpeed;
+			}
+			else
+			{
+				finalSpeed = WalkSpeed;
+			}
 
 			//a simplistic acceleration and deceleration designed to be easy to remove, replace, or iterate upon
 
@@ -295,9 +328,9 @@ namespace StarterAssets
 				localSpeedZLerp = Mathf.Lerp(localSpeedZLerp, localSpeedZ, Time.deltaTime * SpeedChangeRate);
 
 				// animator.SetFloat(HashSpeedX, )
-				animator.SetFloat(HashSpeedX, localSpeedXLerp);
-				animator.SetFloat(HashSpeedZ, localSpeedZLerp);
-				animator.SetFloat(HashMotionSpeed, inputMagnitude);
+				animator.SetFloat(hSpeedX, localSpeedXLerp);
+				animator.SetFloat(hSpeedZ, localSpeedZLerp);
+				animator.SetFloat(hMotionSpeed, inputMagnitude);
 			}
 		}
 
@@ -311,8 +344,8 @@ namespace StarterAssets
 				// update animator if using character
 				if (hasAnimator)
 				{
-					animator.SetBool(HashJump, false);
-					animator.SetBool(HashFreeFall, false);
+					animator.SetBool(hJump, false);
+					animator.SetBool(hFreeFall, false);
 				}
 
 				// stop our velocity dropping infinitely when grounded
@@ -330,7 +363,7 @@ namespace StarterAssets
 					// update animator if using character
 					if (hasAnimator)
 					{
-						animator.SetBool(HashJump, true);
+						animator.SetBool(hJump, true);
 					}
 				}
 
@@ -355,7 +388,7 @@ namespace StarterAssets
 					// update animator if using character
 					if (hasAnimator)
 					{
-						animator.SetBool(HashFreeFall, true);
+						animator.SetBool(hFreeFall, true);
 					}
 				}
 
