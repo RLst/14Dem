@@ -3,7 +3,7 @@ namespace LeMinhHuy.AI.Core
 	public abstract class Decorator : Node
 	{
 		public Node child = null;
-		public override bool hasChild => child is object;
+		public override bool hasChild => child != null;
 		public override void SetOwner(BehaviourAgent owner)
 		{
 			SetOwner(owner);

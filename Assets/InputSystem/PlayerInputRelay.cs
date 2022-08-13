@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 #endif
 
-namespace LeMinhHuy.Input
+namespace LeMinhHuy.Controllers
 {
 	public class PlayerInputRelay : MonoBehaviour
 	{

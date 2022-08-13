@@ -1,4 +1,4 @@
-using LeMinhHuy.Input;
+using LeMinhHuy.Controllers;
 using UnityEngine;
 
 namespace StarterAssets

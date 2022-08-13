@@ -1,6 +1,7 @@
 ﻿using System;
-using LeMinhHuy.Input;
+using LeMinhHuy.Controllers;
 using UnityEngine;
+using UnityEngine.AI;
 #if ENABLE_INPUT_SYSTEM && STARTER_ASSETS_PACKAGES_CHECKED
 using UnityEngine.InputSystem;
 #endif
@@ -114,28 +115,32 @@ namespace LeMinhHuy.Character
 #endif
 			}
 		}
-		bool hasAnimator => animator is object;
+		bool hasAnimator => a != null;
+		bool hasNavMeshAgent => agent != null;
+		bool hasCinemachineCameraTarget => CinemachineCameraTarget != null;
 
 		//Members
 #if ENABLE_INPUT_SYSTEM && STARTER_ASSETS_PACKAGES_CHECKED
 		PlayerInput playerInput;
 #endif
 		PlayerInputRelay input;
-		Animator animator;
+		Animator a;
 		CharacterController controller;
+		NavMeshAgent agent;
 
 		GameObject mainCamera;
 		float aimSensitivity;
 		bool overrideFacing = false;
 		Transform t;
-		private float localSpeedXLerp;
-		private float localSpeedZLerp;
-		private float crouchSmoothWeight;
+		float localSpeedXLerp;
+		float localSpeedZLerp;
+		float crouchSmoothWeight;
+		private Vector3 targetDirection;
 
 		void Awake()
 		{
 			t = transform;
-			animator = GetComponent<Animator>();
+			a = GetComponent<Animator>();
 			controller = GetComponent<CharacterController>();
 			input = GetComponent<PlayerInputRelay>();
 #if ENABLE_INPUT_SYSTEM && STARTER_ASSETS_PACKAGES_CHECKED
@@ -143,23 +148,25 @@ namespace LeMinhHuy.Character
 #else
 			Debug.LogError( "Starter Assets package is missing dependencies. Please use Tools/Starter Assets/Reinstall Dependencies to fix it");
 #endif
+			agent = GetComponent<NavMeshAgent>();
 
-			// get a reference to our main camera
-			if (mainCamera == null)
-			{
-				mainCamera = Camera.main.gameObject;
-			}
+			mainCamera = Camera.main.gameObject;
 		}
 
-		private void Start()
+		void Start()
 		{
-			cinemachineTargetYaw = CinemachineCameraTarget.transform.rotation.eulerAngles.y;
-
 			AssignAnimationIDs();
+
+			//Set starting rotation
+			if (hasCinemachineCameraTarget)
+				cinemachineTargetYaw = CinemachineCameraTarget.transform.rotation.eulerAngles.y;
 
 			// reset our timeouts on start
 			jumpTimeoutDelta = JumpTimeout;
 			fallTimeoutDelta = FallTimeout;
+
+			//TEMP: Legacy thing from the starter assets
+			if (hasAnimator) a.SetFloat(hMotionSpeed, 1f);
 		}
 		void AssignAnimationIDs()
 		{
@@ -194,28 +201,29 @@ namespace LeMinhHuy.Character
 		void HandleGroundCheck()
 		{
 			// set sphere position, with offset
-			Vector3 spherePosition = new Vector3(t.position.x, t.position.y - GroundedOffset,
-				t.position.z);
-			Grounded = Physics.CheckSphere(spherePosition, GroundedRadius, GroundLayers,
-				QueryTriggerInteraction.Ignore);
+			Vector3 spherePosition = new Vector3(t.position.x, t.position.y - GroundedOffset, t.position.z);
+			Grounded = Physics.CheckSphere(spherePosition, GroundedRadius, GroundLayers, QueryTriggerInteraction.Ignore);
 
 			// update animator if using character
 			if (hasAnimator)
 			{
-				animator.SetBool(hGrounded, Grounded);
+				a.SetBool(hGrounded, Grounded);
 			}
 		}
 
 		//Should only override for the current frame
 		public void OverrideAimSensitivity(float overrideSensitivity) => aimSensitivity = overrideSensitivity;
 		//Smoothly lerp toward a certain direction
-		public void LerpForwardFacing(Vector3 faceDirection, float lerpFactor = 20f)
+		public void SetTargetLookDirection(Vector3 faceDirection, float lerpFactor = 20f)
 		{
 			overrideFacing = true;
 			t.forward = Vector3.Lerp(t.forward, faceDirection, Time.deltaTime * lerpFactor);
 		}
-		private void HandleCameraRotation()
+
+		void HandleCameraRotation()
 		{
+			if (!hasCinemachineCameraTarget) return;
+
 			// if there is an input and camera position is not fixed
 			if (input.look.sqrMagnitude >= _threshold && !LockCameraPosition)
 			{
@@ -231,8 +239,7 @@ namespace LeMinhHuy.Character
 			cinemachineTargetPitch = ClampAngle(cinemachineTargetPitch, BottomClamp, TopClamp);
 
 			// Cinemachine will follow this target
-			CinemachineCameraTarget.transform.rotation = Quaternion.Euler(cinemachineTargetPitch + CameraAngleOverride,
-				cinemachineTargetYaw, 0.0f);
+			CinemachineCameraTarget.transform.rotation = Quaternion.Euler(cinemachineTargetPitch + CameraAngleOverride, cinemachineTargetYaw, 0.0f);
 		}
 
 		void HandleCrouching()
@@ -242,95 +249,98 @@ namespace LeMinhHuy.Character
 			if (input.crouch)
 			{
 				crouchSmoothWeight = Mathf.Lerp(crouchSmoothWeight, crouchLayerWeight, Time.deltaTime * 20f);
-				animator.SetLayerWeight(crouchLayerID, crouchSmoothWeight);
+				a.SetLayerWeight(crouchLayerID, crouchSmoothWeight);
 			}
 			else
 			{
 				crouchSmoothWeight = Mathf.Lerp(crouchSmoothWeight, 0, Time.deltaTime * 20f);
-				animator.SetLayerWeight(crouchLayerID, crouchSmoothWeight);
+				a.SetLayerWeight(crouchLayerID, crouchSmoothWeight);
 			}
 		}
 
-		void HandleMovement()
+		void HandleMovement()   //takes in a vector3 desiredVelocity?
 		{
-			//Walking or sprinting?
-			float finalSpeed;// = input.sprint ? SprintSpeed : MoveSpeed;
-			if (input.crouch)
+			const float deadzone = 0.1f;
+			float desiredSpeed = 0;// = input.sprint ? SprintSpeed : MoveSpeed;
+
+			if (hasNavMeshAgent)
 			{
-				finalSpeed = CrouchSpeed;
-			}
-			else if (input.sprint)
-			{
-				finalSpeed = SprintSpeed;
+				targetDirection = agent.desiredVelocity;
+				desiredSpeed = agent.speed;     //Slow
 			}
 			else
 			{
-				finalSpeed = WalkSpeed;
+				//Set the desired speed
+				if (input.crouch)
+				{
+					desiredSpeed = CrouchSpeed;
+				}
+				else if (input.sprint)
+				{
+					desiredSpeed = SprintSpeed;
+				}
+				else
+				{
+					desiredSpeed = WalkSpeed;
+				}
+
+				//Deal with input deadzone
+				if (input.move == Vector2.zero) desiredSpeed = 0.0f;  //NOTE: Vector2's == operator uses approximation so is not floating point error prone, and is cheaper than magnitude
+
+				// a reference to the players current horizontal velocity
+				float currentHorizontalSpeed = new Vector3(controller.velocity.x, 0.0f, controller.velocity.z).magnitude;
+
+				float inputMagnitude = input.analogMovement ? input.move.magnitude : 1f;
+
+				//Smooth lerp to target speed
+				if (currentHorizontalSpeed < desiredSpeed - deadzone || currentHorizontalSpeed > desiredSpeed + deadzone)
+				{
+					// creates curved result rather than a linear one giving a more organic speed change
+					// note T in Lerp is clamped, so we don't need to clamp our speed
+					speed = Mathf.Lerp(currentHorizontalSpeed, desiredSpeed * inputMagnitude, Time.deltaTime * SpeedChangeRate);
+
+					// round speed to 3 decimal places
+					speed = Mathf.Round(speed * 1000f) / 1000f;
+				}
+				else
+				{
+					speed = desiredSpeed;
+				}
+
+				//normalise input direction
+				Vector3 inputDirection = new Vector3(input.move.x, 0.0f, input.move.y).normalized;
+
+				//Calculate target facing
+				// if there is a move input rotate player when the player is moving
+				if (!overrideFacing && input.move != Vector2.zero)
+				{
+					targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg + mainCamera.transform.eulerAngles.y;
+					float rotation = Mathf.SmoothDampAngle(t.eulerAngles.y, targetRotation, ref rotationVelocity, RotationSmoothTime);
+
+					// rotate to face input direction relative to camera position
+					t.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
+				}
+
+				//Player controlled
+				targetDirection = Quaternion.Euler(0.0f, targetRotation, 0.0f) * Vector3.forward;
+				controller.Move(targetDirection.normalized * (speed * Time.deltaTime) + new Vector3(0.0f, verticalVelocity, 0.0f) * Time.deltaTime);
 			}
 
-			//a simplistic acceleration and deceleration designed to be easy to remove, replace, or iterate upon
-
-			//if there is no input, set the target speed to 0
-			if (input.move == Vector2.zero) finalSpeed = 0.0f;  //NOTE: Vector2's == operator uses approximation so is not floating point error prone, and is cheaper than magnitude
-
-			// a reference to the players current horizontal velocity
-			float currentHorizontalSpeed = new Vector3(controller.velocity.x, 0.0f, controller.velocity.z).magnitude;
-
-			float deadzone = 0.1f;
-			float inputMagnitude = input.analogMovement ? input.move.magnitude : 1f;
-
-			// accelerate or decelerate to target speed
-			if (currentHorizontalSpeed < finalSpeed - deadzone || currentHorizontalSpeed > finalSpeed + deadzone)
-			{
-				// creates curved result rather than a linear one giving a more organic speed change
-				// note T in Lerp is clamped, so we don't need to clamp our speed
-				speed = Mathf.Lerp(currentHorizontalSpeed, finalSpeed * inputMagnitude, Time.deltaTime * SpeedChangeRate);
-
-				// round speed to 3 decimal places
-				speed = Mathf.Round(speed * 1000f) / 1000f;
-			}
-			else
-			{
-				speed = finalSpeed;
-			}
-
-			// normalise input direction
-			Vector3 inputDirection = new Vector3(input.move.x, 0.0f, input.move.y).normalized;
-
-			//NOTE: Vector2's != operator uses approximation so is not floating point error prone, and is cheaper than magnitude
-			// if there is a move input rotate player when the player is moving
-			if (!overrideFacing && input.move != Vector2.zero)
-			{
-				targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg + mainCamera.transform.eulerAngles.y;
-				float rotation = Mathf.SmoothDampAngle(t.eulerAngles.y, targetRotation, ref rotationVelocity, RotationSmoothTime);
-
-				// rotate to face input direction relative to camera position
-				t.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
-			}
-
-			Vector3 targetDirection = Quaternion.Euler(0.0f, targetRotation, 0.0f) * Vector3.forward;
-
-			// move the player
-			controller.Move(targetDirection.normalized * (speed * Time.deltaTime) + new Vector3(0.0f, verticalVelocity, 0.0f) * Time.deltaTime);
-
-			// update animator if using character
+			//UPDATE ANIMATOR
 			if (hasAnimator)
 			{
-				animationBlend = Mathf.Lerp(animationBlend, finalSpeed, Time.deltaTime * SpeedChangeRate);
-				if (animationBlend < 0.01f) animationBlend = 0f;
-
-				var localSpeedX = Vector3.Dot(targetDirection.normalized, t.right) * finalSpeed;
+				var localSpeedX = Vector3.Dot(targetDirection.normalized, t.right) * desiredSpeed;
 				if (localSpeedX > -deadzone && localSpeedX < deadzone) localSpeedX = 0;
 				localSpeedXLerp = Mathf.Lerp(localSpeedXLerp, localSpeedX, Time.deltaTime * SpeedChangeRate);
 
-				var localSpeedZ = Vector3.Dot(targetDirection.normalized, t.forward) * finalSpeed;
+				var localSpeedZ = Vector3.Dot(targetDirection.normalized, t.forward) * desiredSpeed;
 				if (localSpeedZ > -deadzone && localSpeedZ < deadzone) localSpeedZ = 0;
 				localSpeedZLerp = Mathf.Lerp(localSpeedZLerp, localSpeedZ, Time.deltaTime * SpeedChangeRate);
 
-				// animator.SetFloat(HashSpeedX, )
-				animator.SetFloat(hSpeedX, localSpeedXLerp);
-				animator.SetFloat(hSpeedZ, localSpeedZLerp);
-				animator.SetFloat(hMotionSpeed, inputMagnitude);
+				a.SetFloat(hSpeedX, localSpeedXLerp);
+				a.SetFloat(hSpeedZ, localSpeedZLerp);
+				// animator.SetFloat(hMotionSpeed, inputMagnitude);        //TEMP: What does this do exactly?
+				// print($"tdn: {targetDirection.normalized}, ls: ({localSpeedX}, {localSpeedZ}), ds: {desiredSpeed}, lsl: ({localSpeedXLerp}, {localSpeedZLerp})");
 			}
 		}
 
@@ -344,8 +354,8 @@ namespace LeMinhHuy.Character
 				// update animator if using character
 				if (hasAnimator)
 				{
-					animator.SetBool(hJump, false);
-					animator.SetBool(hFreeFall, false);
+					a.SetBool(hJump, false);
+					a.SetBool(hFreeFall, false);
 				}
 
 				// stop our velocity dropping infinitely when grounded
@@ -363,7 +373,7 @@ namespace LeMinhHuy.Character
 					// update animator if using character
 					if (hasAnimator)
 					{
-						animator.SetBool(hJump, true);
+						a.SetBool(hJump, true);
 					}
 				}
 
@@ -388,7 +398,7 @@ namespace LeMinhHuy.Character
 					// update animator if using character
 					if (hasAnimator)
 					{
-						animator.SetBool(hFreeFall, true);
+						a.SetBool(hFreeFall, true);
 					}
 				}
 
@@ -419,9 +429,7 @@ namespace LeMinhHuy.Character
 			else Gizmos.color = transparentRed;
 
 			// when selected, draw a gizmo in the position of, and matching radius of, the grounded collider
-			Gizmos.DrawSphere(
-				new Vector3(transform.position.x, transform.position.y - GroundedOffset, transform.position.z),
-				GroundedRadius);
+			Gizmos.DrawSphere(new Vector3(transform.position.x, transform.position.y - GroundedOffset, transform.position.z), GroundedRadius);
 		}
 	}
 }

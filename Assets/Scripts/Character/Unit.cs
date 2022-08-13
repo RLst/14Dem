@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
 
@@ -15,6 +16,12 @@ namespace LeMinhHuy.Character
 
 		[Header("Events")]
 		public UnityEvent onKill;
+
+		//Properties
+		bool hasAgent => agent != null;
+
+		//Members
+		NavMeshAgent agent;
 
 		public void TakeCoreDamage(float damage)
 		{
@@ -35,7 +42,7 @@ namespace LeMinhHuy.Character
 
 		void Start()
 		{
-			Debug.Assert(weaponMount is object, "Set unit's weapon mount");
+			Debug.Assert(weaponMount != null, "Set unit's weapon mount");
 			health = maxHealth;
 		}
 	}

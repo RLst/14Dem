@@ -63,10 +63,10 @@ namespace LeMinhHuy.Character
 			fireTimer = timeBetweenShots;
 
 			//Gun flash
-			if (gunFlashPFX is object)
+			if (gunFlashPFX != null)
 			{
 				var particle = Instantiate(gunFlashPFX, muzzle.position, muzzle.rotation);
-				Destroy(particle, 0.1f);    //TODO: 
+				Destroy(particle, 0.1f);    //TODO:
 			}
 
 			//Hitscan damage
@@ -75,13 +75,13 @@ namespace LeMinhHuy.Character
 				// Debug.DrawRay(muzzle.position, muzzle.forward * range, Color.red, 20f);
 
 				var damageable = hit.collider.GetComponent<IDamageable>();
-				if (damageable is object)
+				if (damageable != null)
 				{
 					damageable.TakeDamage(damage);
 				}
 
 				//hit particle
-				if (hitPFX is object)
+				if (hitPFX != null)
 				{
 					var particle = Instantiate(hitPFX, hit.point, hit.transform.rotation);
 					Destroy(particle, 1f);  //BAD

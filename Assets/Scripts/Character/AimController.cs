@@ -1,5 +1,5 @@
 using Cinemachine;
-using LeMinhHuy.Input;
+using LeMinhHuy.Controllers;
 using StarterAssets;
 using UnityEngine;
 
@@ -20,7 +20,7 @@ namespace LeMinhHuy.Character
 		Animator a;
 		Transform t;    //Cache to improve performance as transform is extern call
 
-		bool hasAnimator => a is object;
+		bool hasAnimator => a != null;
 		int hAim;
 		private float smoothWeight;
 
@@ -49,8 +49,8 @@ namespace LeMinhHuy.Character
 				//Handle locked player facing while aiming
 				Vector3 yEqualizedAimWorldPos = sc.aimWorldPosition;
 				yEqualizedAimWorldPos.y = t.position.y;
-				var faceDirection = (yEqualizedAimWorldPos - t.position).normalized;
-				tpc.LerpForwardFacing(faceDirection);
+				Vector3 lookDirection = (yEqualizedAimWorldPos - t.position).normalized;
+				tpc.SetTargetLookDirection(lookDirection);
 
 				if (hasAnimator)
 				{

@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using LeMinhHuy.Input;
+using LeMinhHuy.Controllers;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -19,8 +19,8 @@ namespace LeMinhHuy.Character
 		public UnityEvent onChangeWeapon;
 
 		//Members
-		public Weapon currentWeapon;
-		public List<Weapon> weapons = new List<Weapon>();
+		Weapon currentWeapon;
+		List<Weapon> weapons = new List<Weapon>();
 		int currentWeaponIndex = 0;
 		Camera mainCamera;
 		Transform position;
