@@ -81,7 +81,7 @@ MonoBehaviour:
   <muzzle>k__BackingField: {fileID: 5731297249224049603}
   maxAmmoCapacity: 30
   damage: 5
-  fireRate: 300
+  fireRate: 1000
   reloadTime: 1
   range: 50
   shootableLayerMask:
@@ -92,7 +92,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 6021244190809890217}
         m_TargetAssemblyTypeName: LeMinhHuy.Audio.AudioSystem, Assembly-CSharp
-        m_MethodName: NoOverlapChancePlaySet
+        m_MethodName: ChancePlaySet
         m_Mode: 2
         m_Arguments:
           m_ObjectArgument: {fileID: 11400000, guid: c30503cfa5ec04176b2bb546e9f1bcb0,

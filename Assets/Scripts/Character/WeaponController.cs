@@ -1,23 +1,27 @@
 using System;
+using System.Collections.Generic;
 using LeMinhHuy.Input;
 using UnityEngine;
+using UnityEngine.Events;
 
-namespace LeMinhHuy.AI
+namespace LeMinhHuy.Character
 {
 	[RequireComponent(typeof(Unit), typeof(PlayerInputRelay))]
 	public class WeaponController : MonoBehaviour    //Rename to weapon controller
 	{
 		[SerializeField] LayerMask aimLayerMask;
-
-		[SerializeField] Weapon[] weapons;
-		[SerializeField] Transform unitWeaponMount;
-		Weapon currentWeapon;
-		int currentWeaponIndex = 0;
+		[SerializeField] Weapon[] weaponPrefabs;
 
 		//Properties
 		public Vector3 aimWorldPosition { get; private set; }
 
+		//Events
+		public UnityEvent onChangeWeapon;
+
 		//Members
+		public Weapon currentWeapon;
+		public List<Weapon> weapons = new List<Weapon>();
+		int currentWeaponIndex = 0;
 		Camera mainCamera;
 		Transform position;
 		PlayerInputRelay input;
@@ -33,10 +37,9 @@ namespace LeMinhHuy.AI
 		void Start()
 		{
 			//Set a current weapon
-			if (weapons.Length == 0) return;
-			currentWeapon = weapons[0];
-
+			if (weaponPrefabs.Length == 0) return;
 			MountAllWeapons();
+			SetWeapon(0);
 		}
 
 		void Update()
@@ -63,9 +66,9 @@ namespace LeMinhHuy.AI
 
 		void HandleWeaponFiring()
 		{
-			if (input.shoot)
+			if (input.fire)
 			{
-				currentWeapon.Fire();
+				currentWeapon?.Fire();
 			}
 		}
 
@@ -73,7 +76,7 @@ namespace LeMinhHuy.AI
 		{
 			if (input.reload)
 			{
-				currentWeapon.Reload();
+				currentWeapon?.Reload();
 			}
 		}
 
@@ -85,10 +88,11 @@ namespace LeMinhHuy.AI
 
 		void MountAllWeapons()
 		{
-			foreach (var w in weapons)
+			foreach (var w in weaponPrefabs)
 			{
-				w.transform.SetParent(unit.weaponMount);
-				w.gameObject.SetActive(false);
+				var newWeapon = Instantiate<Weapon>(w, unit.weaponMount.position, unit.weaponMount.rotation, unit.weaponMount);
+				newWeapon.gameObject.SetActive(false);
+				weapons.Add(newWeapon);
 			}
 		}
 		void SetWeapon(int index)
@@ -97,7 +101,9 @@ namespace LeMinhHuy.AI
 			{
 				foreach (var w in weapons)
 					w.gameObject.SetActive(false);
-				weapons[index].gameObject.SetActive(true);
+				currentWeapon = weapons[index];
+				currentWeapon.gameObject.SetActive(true);
+				currentWeapon.Reload();
 			}
 			catch (Exception e)
 			{
@@ -107,24 +113,26 @@ namespace LeMinhHuy.AI
 
 		void NextWeapon()
 		{
-			if (weapons.Length == 0) return;
+			if (weapons.Count == 0) return;
 
 			currentWeaponIndex++;
-			if (currentWeaponIndex > weapons.Length)
+			if (currentWeaponIndex > weapons.Count)
 				currentWeaponIndex = 0;
 
 			SetWeapon(currentWeaponIndex);
+			onChangeWeapon.Invoke();
 		}
 
 		void PreviousWeapon()
 		{
-			if (weapons.Length == 0) return;
+			if (weapons.Count == 0) return;
 
 			currentWeaponIndex--;
 			if (currentWeaponIndex < 0)
-				currentWeaponIndex = weapons.Length;
+				currentWeaponIndex = weapons.Count;
 
 			SetWeapon(currentWeaponIndex);
+			onChangeWeapon.Invoke();
 		}
 	}
 }

@@ -279,6 +279,17 @@
                 },
                 {
                     "name": "",
+                    "id": "a19764db-88e5-499b-b5c0-2c226e9eda7f",
+                    "path": "<Keyboard>/z",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse",
+                    "action": "Aim",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "321534c5-2281-4d5d-9e79-6ae682d2ace4",
                     "path": "<Keyboard>/c",
                     "interactions": "",

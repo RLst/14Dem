@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace LeMinhHuy.AI
+namespace LeMinhHuy.Character
 {
 	public class Weapon : MonoBehaviour
 	{
@@ -10,8 +10,8 @@ namespace LeMinhHuy.AI
 		[SerializeField] int maxAmmoCapacity = 30;
 		[SerializeField] float damage = 5f;
 		[Tooltip("in RPM")]
-		[SerializeField] float fireRate = 300f;
-		float fireRatePerSecond => fireRate * 0.0166666666f;   //1/60
+		[SerializeField] float fireRate = 500f;
+		float timeBetweenShots;
 		[Tooltip("in seconds")]
 		[SerializeField] float reloadTime = 1f;
 		[Tooltip("in metres")]
@@ -24,13 +24,19 @@ namespace LeMinhHuy.AI
 		public UnityEvent onEmptyMagazine;
 
 		//Properties
-		bool canReload => reloadTimer <= 0;
-		bool canFire => fireTimer <= 0;
+		bool canReload => ammo < maxAmmoCapacity && reloadTimer <= 0;
+		bool isReloading => reloadTimer > 0;
+		bool canFire => !isReloading && fireTimer <= 0;
 
 		//Members
 		int ammo;
 		float reloadTimer;
 		float fireTimer;
+
+		void Start()
+		{
+			timeBetweenShots = 60f / fireRate;
+		}
 
 		public bool TrySpendAmmo()
 		{
@@ -44,6 +50,7 @@ namespace LeMinhHuy.AI
 
 		public void Fire()
 		{
+			if (!canFire) return;
 			if (!TrySpendAmmo())
 			{
 				onEmptyMagazine.Invoke();    //Click click!
@@ -51,9 +58,9 @@ namespace LeMinhHuy.AI
 			}
 
 			//Firing! Start fire timer
-			fireTimer = fireRatePerSecond;
+			fireTimer = timeBetweenShots;
 
-			//Raycast shoot
+			//Hitscan damage
 			if (Physics.Raycast(muzzle.position, muzzle.forward, out RaycastHit hit, range, shootableLayerMask))
 			{
 				var damageable = hit.collider.GetComponent<IDamageable>();

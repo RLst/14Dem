@@ -75,7 +75,7 @@ namespace LeMinhHuy.Audio
 		/// </summary>
 		public void ChancePlay()
 		{
-			if (!audioSet) return;
+			if (audioSet is null) return;
 
 			//Don't play the same sound over and over again
 			while (true)
@@ -113,9 +113,9 @@ namespace LeMinhHuy.Audio
 
 		/// <summary> Play one audio clip out of a magazine according to chance </summary>
 		/// <param name="set">AudioMagazine scriptable object</param>
-		public void ChancePlaySet(AudioSet set, float? volume = null)
+		public void ChancePlaySet(AudioSet set)
 		{
-			if (!set) return;
+			if (set is null) return;
 			if (set.clips.Count == 0) return;
 
 			//Don't play the same sound over and over again
@@ -136,7 +136,7 @@ namespace LeMinhHuy.Audio
 				//Play by chance
 				if (Random.Range(0, 100) < set.chance)
 				{
-					audioSource.PlayOneShot(clipToPlay, volume.HasValue ? volume.Value : set.volume);
+					audioSource.PlayOneShot(clipToPlay, set.volume);
 					set.lastPlayed = clipToPlay;
 				}
 				break;
@@ -189,7 +189,7 @@ namespace LeMinhHuy.Audio
 			AudioSet set = audioSet as AudioSet;
 
 			//Unbox
-			if (!set)
+			if (set is null)
 			{
 				print("Not an audio magazine!");
 				return;
