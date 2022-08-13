@@ -7,14 +7,15 @@ namespace LeMinhHuy.Character
 	{
 		//Inspector
 		[field: SerializeField] public Transform muzzle { get; private set; }
+		[SerializeField] GameObject hitPFX;
+		[SerializeField] GameObject gunFlashPFX;
 		[SerializeField] int maxAmmoCapacity = 30;
 		[SerializeField] float damage = 5f;
-		[Tooltip("in RPM")]
-		[SerializeField] float fireRate = 500f;
-		float timeBetweenShots;
-		[Tooltip("in seconds")]
+		[Tooltip("Fire rate in RPM")]
+		[SerializeField] float fireRate = 1000f;
+		[Tooltip("Reload time in seconds")]
 		[SerializeField] float reloadTime = 1f;
-		[Tooltip("in metres")]
+		[Tooltip("Shoot range in metres")]
 		[SerializeField] float range = 50f;
 		[SerializeField] LayerMask shootableLayerMask;
 
@@ -30,6 +31,7 @@ namespace LeMinhHuy.Character
 
 		//Members
 		int ammo;
+		float timeBetweenShots;
 		float reloadTimer;
 		float fireTimer;
 
@@ -60,13 +62,29 @@ namespace LeMinhHuy.Character
 			//Firing! Start fire timer
 			fireTimer = timeBetweenShots;
 
+			//Gun flash
+			if (gunFlashPFX is object)
+			{
+				var particle = Instantiate(gunFlashPFX, muzzle.position, muzzle.rotation);
+				Destroy(particle, 0.1f);    //TODO: 
+			}
+
 			//Hitscan damage
 			if (Physics.Raycast(muzzle.position, muzzle.forward, out RaycastHit hit, range, shootableLayerMask))
 			{
+				// Debug.DrawRay(muzzle.position, muzzle.forward * range, Color.red, 20f);
+
 				var damageable = hit.collider.GetComponent<IDamageable>();
 				if (damageable is object)
 				{
 					damageable.TakeDamage(damage);
+				}
+
+				//hit particle
+				if (hitPFX is object)
+				{
+					var particle = Instantiate(hitPFX, hit.point, hit.transform.rotation);
+					Destroy(particle, 1f);  //BAD
 				}
 			}
 			onFire.Invoke();
