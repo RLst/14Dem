@@ -114,6 +114,7 @@ Bot difficulty would be dictated by :
 	4h
 - Save the game config to local disk.
 	2h
-- Only recreate new game config upon the last config is deleted.
+- Only recreate new game config if the last config is deleted.
 	? Only create a new game config if there is no config file found?
 	? Does the user have the option to delete the config file in game?
+	! if there's no config file on startup then create a new one with default values

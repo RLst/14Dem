@@ -1,8 +1,11 @@
+using System;
+
 namespace LeMinhHuy.Character
 {
+	[Serializable]
 	public enum Team
 	{
-		North,
-		South
+		North = 1,
+		South = 0
 	}
 }
