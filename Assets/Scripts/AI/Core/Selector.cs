@@ -23,6 +23,8 @@ namespace LeMinhHuy.AI.Core
 					case NodeState.Success:
 						state = result;
 						break;
+					case NodeState.Failure:
+						continue;
 					//if failure then continue onto next child...
 					default:
 						throw new NotImplementedException("NodeState not implemented yet");

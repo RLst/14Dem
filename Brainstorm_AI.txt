@@ -35,32 +35,28 @@ Bot.Retreat(), Find all teammates within a specified radius, move to the average
 
 AI Logic
 ==========
-Entry - ActSel: [P]
-v	Seq: Retreat
-v		Cond: isHealthLow: if health is low
-v		Act: Retreat() to teammates
+Entry - ActSel1: [P]
+vo	Seq: Retreat
+vo		Cond: isHealthLow: if health is low
+vo		Act: Retreat() to teammates
 
-	Seq: Targeting [P]
-v		Cond: if there is a new target that's in view
-		Sel: [P]
-			Seq:
+o	Seq: Targeting [P]
+v		Cond: is new target in FOV
+		Sel1: [P]
+			Seq2:
 v				Inv+Cond:if there is no current target
 v				Act: Set new target as current target
 v			Act: if new target in shooting range set as current target with delay
-			//Combine all these into one node
-x			Seq: [P]
-vx				Cond: if the new target is within shooting range
-x				Act: set new target as current target with a delay [P]
 
 	Seq: Chase or Reload or Attack
 v		Cond: if there is a current target
-			Seq: if current target in range and in view then chase
-	v			Cond: if current target is in range and in view
-				Seq: if not enough ammo then reload
-	v				Inv+Cond: if not enough ammo
-					Act: Reload()
-				Act: Shoot()
-			Act: Chase()
+		Seq3:
+v			Cond: if current target is in range and in view
+			Seq4:
+v				Inv+Cond: if not enough ammo
+				Act: Reload()
+			Act: Shoot()
+		Act: Chase()
 
 	Act: Hunt()
 		(if Health is good, no new targets, no current target)
@@ -69,6 +65,11 @@ v		Cond: if there is a current target
 
 
 
+[old]
+		//Combine all these into one node
+x			Seq: [P]
+vx				Cond: if the new target is within shooting range
+x				Act: set new target as current target with a delay [P]
 Architecture
 =============
 Unit

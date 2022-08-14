@@ -12,6 +12,7 @@ namespace LeMinhHuy.AI
 		WeaponController weaponController;
 		public override NodeState OnExecute()
 		{
+
 			weaponController.FireWeapon();
 			return state = NodeState.Success;
 		}

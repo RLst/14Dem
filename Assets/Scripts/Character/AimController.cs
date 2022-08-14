@@ -23,6 +23,7 @@ namespace LeMinhHuy.Character
 		//Aim target world position; Where I'm aiming at
 		public RaycastHit? target { get; private set; }
 		bool hasAnimator => a != null;
+		bool hasAimCamera => aimCamera != null;
 
 		//Members
 		PlayerInputRelay input;
@@ -52,7 +53,8 @@ namespace LeMinhHuy.Character
 
 		void Update()
 		{
-			aimCamera.gameObject.SetActive(input.aim);
+			if (hasAimCamera)
+				aimCamera.gameObject.SetActive(input.aim);
 
 			if (input.aim)
 			{

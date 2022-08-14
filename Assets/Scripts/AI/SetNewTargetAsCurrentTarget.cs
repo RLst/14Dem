@@ -20,6 +20,4 @@ namespace LeMinhHuy.AI
 			return NodeState.Success;
 		}
 	}
-
-	
 }
