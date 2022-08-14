@@ -9,12 +9,12 @@ namespace LeMinhHuy.Character
 	[RequireComponent(typeof(Unit), typeof(PlayerInputRelay))]
 	public class WeaponController : MonoBehaviour    //Rename to weapon controller
 	{
-		[SerializeField] LayerMask aimLayerMask;
+		[SerializeField] bool controllerDealsDamage = false;
 		[SerializeField] Weapon[] weaponPrefabs;
 		[ReadOnlyField] Weapon currentWeapon;
 
 		//Properties
-		public Vector3 aimWorldPosition { get; private set; }
+		bool isSwappingWeapons => swapWeaponTimer > 0;
 
 		//Events
 		public UnityEvent onChangeWeapon;
@@ -23,17 +23,19 @@ namespace LeMinhHuy.Character
 		List<Weapon> weapons = new List<Weapon>();
 		int currentWeaponIndex = 0;
 		Camera mainCamera;
-		Transform position;
+		AimController ac;
 		PlayerInputRelay input;
 		Unit unit;
+		float swapWeaponTimer;
+
 
 		void Awake()
 		{
 			mainCamera = Camera.main;
 			input = GetComponent<PlayerInputRelay>();
 			unit = GetComponent<Unit>();
+			ac = GetComponent<AimController>();
 		}
-
 		void Start()
 		{
 			//Set a current weapon
@@ -41,49 +43,12 @@ namespace LeMinhHuy.Character
 			MountAllWeapons();
 			SetWeapon(0);
 		}
-
 		void Update()
 		{
-			HandleWeaponTargeting();
-			HandleWeaponFiring();
-			HandleWeaponReloading();
+			if (input.fire) FireWeapon();
+			if (input.reload) ReloadWeapon();
 			HandleWeaponSwitching();
-		}
-
-		void HandleWeaponTargeting()
-		{
-			if (input.aim)
-			{
-				aimWorldPosition = Vector3.zero;
-				var screenCenter = new Vector2(Screen.width * 0.5f, Screen.height * 0.5f);
-				var shootRay = mainCamera.ScreenPointToRay(screenCenter);
-				if (Physics.Raycast(shootRay, out RaycastHit hit, 500f, aimLayerMask))
-				{
-					aimWorldPosition = hit.point;
-				}
-			}
-		}
-
-		void HandleWeaponFiring()
-		{
-			if (input.fire)
-			{
-				currentWeapon?.Fire();
-			}
-		}
-
-		void HandleWeaponReloading()
-		{
-			if (input.reload)
-			{
-				currentWeapon?.Reload();
-			}
-		}
-
-		void HandleWeaponSwitching()
-		{
-			if (input.nextWeapon) NextWeapon();
-			else if (input.prevWeapon) PreviousWeapon();
+			HandleTiming();
 		}
 
 		void MountAllWeapons()
@@ -111,7 +76,45 @@ namespace LeMinhHuy.Character
 			}
 		}
 
-		void NextWeapon()
+
+		public void FireWeapon()    //AI friendly
+		{
+			if (isSwappingWeapons) return;
+
+			//TEMP: Because the animation rigging system is faulty, we let this controller do damage instead
+			currentWeapon?.Fire(dealsDamage: !controllerDealsDamage);
+
+			if (ac.isAiming && controllerDealsDamage && ac.target.HasValue)
+			{
+				//Deal damage via hit scan
+				var damageable = ac.target.Value.collider.GetComponent<IDamageable>();
+				if (damageable != null)
+				{
+					damageable.TakeDamage(currentWeapon.damage);
+				}
+
+				//hit particle
+				if (currentWeapon.hitPFX != null)
+				{
+					var particle = Instantiate(currentWeapon.hitPFX, ac.target.Value.point, ac.target.Value.transform.rotation);
+					Destroy(particle, 1f);  //BAD
+				}
+			}
+		}
+
+		public void ReloadWeapon()  //AI friendly
+		{
+			if (currentWeapon.isReloading) return;
+			currentWeapon?.Reload();
+		}
+
+		void HandleWeaponSwitching()
+		{
+			if (input.nextWeapon) NextWeapon();
+			else if (input.prevWeapon) PreviousWeapon();
+		}
+
+		public void NextWeapon()    //AI friendly
 		{
 			if (weapons.Count == 0) return;
 
@@ -123,7 +126,7 @@ namespace LeMinhHuy.Character
 			onChangeWeapon.Invoke();
 		}
 
-		void PreviousWeapon()
+		public void PreviousWeapon()    //AI friendly
 		{
 			if (weapons.Count == 0) return;
 
@@ -133,6 +136,12 @@ namespace LeMinhHuy.Character
 
 			SetWeapon(currentWeaponIndex);
 			onChangeWeapon.Invoke();
+		}
+
+		void HandleTiming()
+		{
+			if (swapWeaponTimer > 0)
+				swapWeaponTimer -= Time.deltaTime;
 		}
 	}
 }

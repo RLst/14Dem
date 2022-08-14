@@ -12,14 +12,23 @@ Required data that the bots will need access to so I know the required fields to
 	Crouch
 • Current Target Opponent
 
+API needed for bots
+==================
+Bot.Wander()
+Bot.Chase()
+AimController.Aim(Target)
+WeaponController.ShootWeapon()
+WeaponController.ReloadWeapon()
+WeaponController.NextWeapon()
+Bot.Retreat(), Find all teammates within a specified radius, move to the average
+
 AI Logic
 ==========
 Entry:
 
 Seq: Retreat
 	Cond: if health is low
-	Act: retreat to teammates
-		//Find all teammates within a specified radius, move to the average
+	Act: Retreat() to teammates
 
 Seq: Targeting
 	Cond: if there is a new target that's in view
@@ -31,19 +40,20 @@ Seq: Targeting
 			Cond: if the new target is in shooting range
 			Act: set new target as current target with a delay
 
-Seq: Attack or Chase
+Seq: Chase or Reload or Attack
 	Cond: if there is a current target
-	Sel:
-		Seq:
-			Cond: if current target is in range
-			Act: Attack
-		Act: Chase
+	Seq:
+		Cond: if current target is in range
+			Seq: Attack/Reload
+				Cond: if not enough ammo
+				Act: Reload()
+		Act: Shoot()
+	Act: Chase()
 
-Act: Hunt
+Act: Wander()
 	(if Health is good, no new targets, no current target)
 		//Navigate towards the average of all enemies + random direction every 3 seconds
 		//Minimum move distance, max movedistance, max random angle
-
 
 
 	Look for a closer enemy than the current one and wait a short time before switching to the new one

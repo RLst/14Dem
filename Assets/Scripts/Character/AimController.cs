@@ -16,9 +16,12 @@ namespace LeMinhHuy.Character
 		[SerializeField] float aimLayerWeight = 0.5f;   //Animator layer weight
 		[SerializeField] float aimRotationOffset = 35f;
 		[SerializeField] float aimSmoothing = 50f;
+		[SerializeField] LayerMask aimLayerMask;
 
 		//Properties
 		public bool isAiming { get; private set; }
+		//Aim target world position; Where I'm aiming at
+		public RaycastHit? target { get; private set; }
 		bool hasAnimator => a != null;
 
 		//Members
@@ -28,6 +31,8 @@ namespace LeMinhHuy.Character
 		Animator a;
 		Transform t;    //Cache to improve performance as transform is extern call
 		int hAim;
+		Camera mainCam;
+		private Vector3 lookDirection;
 
 		void Awake()
 		{
@@ -36,6 +41,7 @@ namespace LeMinhHuy.Character
 			tpc = GetComponent<ThirdPersonController>();
 			weaponController = GetComponent<WeaponController>();
 			a = GetComponent<Animator>();
+			mainCam = Camera.main;
 		}
 
 		void Start()
@@ -52,34 +58,47 @@ namespace LeMinhHuy.Character
 			{
 				Aim();
 			}
-			else
+			else if (hasAnimator)
 			{
-				if (hasAnimator)
-				{
-					a.SetBool(hAim, false);
-				}
+				a.SetBool(hAim, false);
 			}
 		}
 
-		void Aim()
+		public void Aim(Vector3? desiredTarget = null)
 		{
 			tpc.OverrideAimSensitivity(aimSensitivity);
 
-			//Handle locked player facing while aiming
-			Vector3 aimWorldPositionFlattened = weaponController.aimWorldPosition;
-			aimWorldPositionFlattened.y = t.position.y;
-			Vector3 lookDirection = (aimWorldPositionFlattened - t.position).normalized;
+			//Aim via hitscan
+			const float RAYCAST_DIST = 1000f;
+			var screenCenter = new Vector2(Screen.width * 0.5f, Screen.height * 0.5f);
+			var shootRay = mainCam.ScreenPointToRay(screenCenter);
+			if (Physics.Raycast(shootRay, out RaycastHit hit, RAYCAST_DIST, aimLayerMask))
+			{
+				target = hit;
+			}
+			target = null;
 
-			//Apply offset
-			var quat = Quaternion.Euler(0, aimRotationOffset, 0);
-			lookDirection = quat * lookDirection;
+			//Face player correctly
+			if (target.HasValue)
+			{
+				Vector3 aimWorldPositionFlattened = target.Value.point;
+				aimWorldPositionFlattened.y = t.position.y;
+				lookDirection = (aimWorldPositionFlattened - t.position).normalized;
+			}
+			else
+			{
+				lookDirection = mainCam.transform.forward;
+			}
 
+			//Apply slight rotational offset
+			lookDirection = Quaternion.Euler(0, aimRotationOffset, 0) * lookDirection;
+
+			//Set final character rotation
 			tpc.SetTargetLookDirection(lookDirection, aimSmoothing);
 
-			if (hasAnimator)
-			{
-				a.SetBool(hAim, true);
-			}
+			//Animator
+			if (!hasAnimator) return;
+			a.SetBool(hAim, true);
 		}
 	}
 }

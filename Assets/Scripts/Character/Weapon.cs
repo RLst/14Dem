@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -7,10 +8,12 @@ namespace LeMinhHuy.Character
 	{
 		//Inspector
 		[field: SerializeField] public Transform muzzle { get; private set; }
-		[SerializeField] GameObject hitPFX;
+		public GameObject hitPFX;
 		[SerializeField] GameObject gunFlashPFX;
+		[SerializeField] float gunFlashDuration = 0.15f;
 		[SerializeField] int maxAmmoCapacity = 30;
-		[SerializeField] float damage = 5f;
+		[Tooltip("Damage done by one shot of this gun")]
+		[field: SerializeField] public float damage { get; private set; } = 5f;
 		[Tooltip("Fire rate in RPM")]
 		[SerializeField] float fireRate = 1000f;
 		[Tooltip("Reload time in seconds")]
@@ -25,19 +28,28 @@ namespace LeMinhHuy.Character
 		public UnityEvent onEmptyMagazine;
 
 		//Properties
-		bool canReload => ammo < maxAmmoCapacity && reloadTimer <= 0;
-		bool isReloading => reloadTimer > 0;
-		bool canFire => !isReloading && fireTimer <= 0;
+		public bool canReload => ammo < maxAmmoCapacity && reloadTimer <= 0;
+		public bool isReloading => reloadTimer > 0;
+		public bool canFire => !isReloading && fireTimer <= 0;
 
 		//Members
 		int ammo;
-		float timeBetweenShots;
+		float r_timeBetweenShots;   //read only
 		float reloadTimer;
 		float fireTimer;
 
 		void Start()
 		{
-			timeBetweenShots = 60f / fireRate;
+			r_timeBetweenShots = 60f / fireRate;
+		}
+		void Update()
+		{
+			//Handle timings
+			if (reloadTimer > 0)
+				reloadTimer -= Time.deltaTime;
+
+			if (fireTimer > 0)
+				fireTimer -= Time.deltaTime;
 		}
 
 		public bool TrySpendAmmo()
@@ -50,7 +62,7 @@ namespace LeMinhHuy.Character
 			return false;
 		}
 
-		public void Fire()
+		public void Fire(bool dealsDamage = true)
 		{
 			if (!canFire) return;
 			if (!TrySpendAmmo())
@@ -60,20 +72,20 @@ namespace LeMinhHuy.Character
 			}
 
 			//Firing! Start fire timer
-			fireTimer = timeBetweenShots;
+			fireTimer = r_timeBetweenShots;
+			onFire.Invoke();
 
 			//Gun flash
 			if (gunFlashPFX != null)
 			{
-				var particle = Instantiate(gunFlashPFX, muzzle.position, muzzle.rotation);
-				Destroy(particle, 0.1f);    //TODO:
+				StartCoroutine(GunFlash());
 			}
 
-			//Hitscan damage
+			if (!dealsDamage) return;
+
+			//Weapon projected hitscan damage + hit particle generation
 			if (Physics.Raycast(muzzle.position, muzzle.forward, out RaycastHit hit, range, shootableLayerMask))
 			{
-				// Debug.DrawRay(muzzle.position, muzzle.forward * range, Color.red, 20f);
-
 				var damageable = hit.collider.GetComponent<IDamageable>();
 				if (damageable != null)
 				{
@@ -87,7 +99,6 @@ namespace LeMinhHuy.Character
 					Destroy(particle, 1f);  //BAD
 				}
 			}
-			onFire.Invoke();
 		}
 
 		public void Reload()
@@ -100,14 +111,11 @@ namespace LeMinhHuy.Character
 			onReload.Invoke();
 		}
 
-		void Update()
+		IEnumerator GunFlash()
 		{
-			//Time the reload
-			if (reloadTimer > 0)
-				reloadTimer -= Time.deltaTime;
-
-			if (fireTimer > 0)
-				fireTimer -= Time.deltaTime;
+			gunFlashPFX.SetActive(true);
+			yield return new WaitForSeconds(gunFlashDuration);
+			gunFlashPFX.SetActive(false);
 		}
 	}
 }

@@ -214,7 +214,7 @@ namespace LeMinhHuy.Character
 		//Should only override for the current frame
 		public void OverrideAimSensitivity(float overrideSensitivity) => aimSensitivity = overrideSensitivity;
 		//Smoothly lerp toward a certain direction
-		public void SetTargetLookDirection(Vector3 faceDirection, float lerpFactor = 20f)
+		public void SetTargetLookDirection(Vector3 faceDirection, float lerpFactor = 30f)
 		{
 			overrideFacing = true;
 
