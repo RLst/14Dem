@@ -1549,8 +1549,6 @@ MonoBehaviour:
   onChangeWeapon:
     m_PersistentCalls:
       m_Calls: []
-  currentWeapon: {fileID: 0}
-  weapons: []
 --- !u!114 &1110567688
 MonoBehaviour:
   m_ObjectHideFlags: 0

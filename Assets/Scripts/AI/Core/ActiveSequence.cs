@@ -1,9 +1,12 @@
 using System;
+using System.Collections.Generic;
 
 namespace LeMinhHuy.AI.Core
 {
 	public class ActiveSequence : Composite
 	{
+		public ActiveSequence(params Node[] children) : base(children) { }
+
 		//The point is to give the best chance for all pending children to run
 
 		//If child success, go to next child

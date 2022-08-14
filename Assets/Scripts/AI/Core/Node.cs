@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace LeMinhHuy.AI.Core
@@ -5,15 +6,14 @@ namespace LeMinhHuy.AI.Core
 	[System.Serializable]
 	public abstract class Node
 	{
-		public Node() { }
-		public Node(Node parent, BehaviourAgent owner)
-		{
-			this.parent = parent;
-			this.owner = owner;
-		}
+		// public Node(Node parent, BehaviourAgent owner)
+		// {
+		// 	this.parent = parent;
+		// 	this.owner = owner;
+		// }
 
 		//Properties
-		public BehaviourAgent owner { get; private set; }
+		public BehaviourAgent owner { get; protected set; }
 		//Set the owner of this node and it's children
 		public virtual void SetOwner(BehaviourAgent owner) => this.owner = owner;
 

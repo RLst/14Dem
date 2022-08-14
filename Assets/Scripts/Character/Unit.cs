@@ -17,12 +17,6 @@ namespace LeMinhHuy.Character
 		[Header("Events")]
 		public UnityEvent onKill;
 
-		//Properties
-		bool hasAgent => agent != null;
-
-		//Members
-		NavMeshAgent agent;
-
 		public void TakeCoreDamage(float damage)
 		{
 			health -= damage;

@@ -1,12 +1,15 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace LeMinhHuy.AI.Core
 {
 	public class IfThenElser : Composite
 	{
+		public IfThenElser(params Node[] children) : base(children) { }
+
 		public override NodeState OnExecute()
 		{
-			if (children.Count != 2 && children.Count != 3)
+			if (children.Length != 2 && children.Length != 3)
 			{
 				Debug.LogError("IfThenElseNode must have either 2 or 3 children");
 				return NodeState.Failure;
@@ -29,7 +32,7 @@ namespace LeMinhHuy.AI.Core
 				}
 				else if (childStatuses == NodeState.Failure)
 				{
-					if (children.Count == 3)
+					if (children.Length == 3)
 					{
 						childIndex = 2;
 					}

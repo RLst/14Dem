@@ -5,8 +5,9 @@ namespace LeMinhHuy.AI.Core
 	public class BehaviourDirector : Singleton<BehaviourDirector>
 	{
 		//Inspector
-		public TickMode tickMode { get; set; }
-		public float tickRate = 30;
+		public TickMode tickMode;
+		public float tickRateFPS = 30;
+		public float tickRateSeconds => 1 / tickRateFPS;
 
 		//Members
 		BehaviourAgent[] allAgents;

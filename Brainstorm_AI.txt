@@ -12,6 +12,17 @@ Required data that the bots will need access to so I know the required fields to
 	Crouch
 • Current Target Opponent
 
+
+Nodes required
+==============
+isHealthLow : Condition
+Retreat : Action
+isNewTargetInView : Condition
+SetTarget
+ClearTarget
+Delay
+hasTarget
+
 API needed for bots
 ==================
 Bot.Wander()
@@ -36,7 +47,7 @@ Entry - ActSel: [P]
 				Cond:if there is no current target
 				Act: Set new target as current target
 			Seq: [P]
-				Cond: if the new target is in shooting range
+				Cond: if the new target is within shooting range
 				Act: set new target as current target with a delay [P]
 
 	Seq: Chase or Reload or Attack

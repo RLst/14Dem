@@ -1,9 +1,12 @@
 using System;
+using System.Collections.Generic;
 
 namespace LeMinhHuy.AI.Core
 {
 	public class Selector : Composite
 	{
+		public Selector(params Node[] children) : base(children) { }
+
 		//If child success, return success, finish
 		//If child fails, go to next child
 		//If child pending, return pending, finish

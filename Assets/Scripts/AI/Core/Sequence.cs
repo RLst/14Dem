@@ -1,9 +1,12 @@
 using System;
+using System.Collections.Generic;
 
 namespace LeMinhHuy.AI.Core
 {
 	public class Sequence : Composite
 	{
+		public Sequence(params Node[] children) : base(children) { }
+
 		//If child success, go to next child
 		//If child fails, return fail, end
 		//If child pending, return pending, end

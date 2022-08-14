@@ -1,9 +1,12 @@
 using System;
+using System.Collections.Generic;
 
 namespace LeMinhHuy.AI.Core
 {
 	public class ActiveSelector : Composite
 	{
+		public ActiveSelector(params Node[] children) : base(children) { }
+
 		//The point is to allow all pending children to run
 
 		//If a child success, return success, finish

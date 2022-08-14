@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 namespace LeMinhHuy.AI.Core
 {
@@ -12,6 +13,8 @@ namespace LeMinhHuy.AI.Core
 
 		//Properties
 		public NodeState? agentState { get; private set; }
+		public bool hasAgent => agent != null;
+		public NavMeshAgent agent { get; private set; }
 
 		//Members
 		Node entry;
@@ -39,6 +42,8 @@ namespace LeMinhHuy.AI.Core
 
 		void Awake()
 		{
+			agent = GetComponent<NavMeshAgent>();
+
 			//Force tree setup
 			entry = SetupTree();
 
@@ -70,7 +75,7 @@ namespace LeMinhHuy.AI.Core
 					if (!repeatExecution)
 						gameObject.SetActive(false);   //_agent = false; stacks and overlaps coroutines
 
-					yield return new WaitForSeconds(BehaviourDirector.current.tickRate);
+					yield return new WaitForSeconds(BehaviourDirector.current.tickRateSeconds);
 				}
 				else
 				{
@@ -97,6 +102,7 @@ namespace LeMinhHuy.AI.Core
 		/// </summary>
 		internal void Tick()
 		{
+			// print("tick");
 			entry?.OnExecute();
 		}
 

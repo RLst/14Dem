@@ -2,6 +2,10 @@ namespace LeMinhHuy.AI.Core
 {
 	public class Inverter : Decorator
 	{
+		public Inverter(Node child) : base(child)
+		{
+		}
+
 		public override NodeState OnExecute()
 		{
 			var result = child.OnExecute();
