@@ -11,6 +11,7 @@ namespace LeMinhHuy.Character
 	{
 		[SerializeField] LayerMask aimLayerMask;
 		[SerializeField] Weapon[] weaponPrefabs;
+		[ReadOnlyField] Weapon currentWeapon;
 
 		//Properties
 		public Vector3 aimWorldPosition { get; private set; }
@@ -19,7 +20,6 @@ namespace LeMinhHuy.Character
 		public UnityEvent onChangeWeapon;
 
 		//Members
-		Weapon currentWeapon;
 		List<Weapon> weapons = new List<Weapon>();
 		int currentWeaponIndex = 0;
 		Camera mainCamera;
@@ -116,7 +116,7 @@ namespace LeMinhHuy.Character
 			if (weapons.Count == 0) return;
 
 			currentWeaponIndex++;
-			if (currentWeaponIndex > weapons.Count)
+			if (currentWeaponIndex > weapons.Count - 1)
 				currentWeaponIndex = 0;
 
 			SetWeapon(currentWeaponIndex);
@@ -129,7 +129,7 @@ namespace LeMinhHuy.Character
 
 			currentWeaponIndex--;
 			if (currentWeaponIndex < 0)
-				currentWeaponIndex = weapons.Count;
+				currentWeaponIndex = weapons.Count - 1;
 
 			SetWeapon(currentWeaponIndex);
 			onChangeWeapon.Invoke();

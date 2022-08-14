@@ -49,6 +49,13 @@ namespace LeMinhHuy.Controllers
 		public void OnPause(InputValue value) => SetPause(value.isPressed);
 #endif
 
+		void Update()
+		{
+			SetPause(Input.GetKeyDown(KeyCode.Escape));
+			SetPrevWeapon(Input.GetKeyDown(KeyCode.Q));
+			SetNextWeapon(Input.GetKeyDown(KeyCode.E));
+		}
+
 		//Set functions can be accessed from outside
 		public void SetLook(Vector2 input) => look = input;
 		public void SetAim(bool input) => aim = input;

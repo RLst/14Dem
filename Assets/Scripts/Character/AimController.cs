@@ -9,22 +9,25 @@ namespace LeMinhHuy.Character
 	//Controls player orientation during aiming
 	public class AimController : MonoBehaviour
 	{
+		//Inspector
 		[SerializeField] CinemachineVirtualCamera aimCamera;
-
+		[Space]
 		[SerializeField] float aimSensitivity = 0.4f;
 		[SerializeField] float aimLayerWeight = 0.5f;   //Animator layer weight
-		[SerializeField] float aimRotationOffset = 14f;
-		[SerializeField] float aimSmoothing = 10f;
+		[SerializeField] float aimRotationOffset = 35f;
+		[SerializeField] float aimSmoothing = 50f;
 
+		//Properties
+		public bool isAiming { get; private set; }
+		bool hasAnimator => a != null;
+
+		//Members
 		PlayerInputRelay input;
 		ThirdPersonController tpc;
 		WeaponController weaponController;
 		Animator a;
 		Transform t;    //Cache to improve performance as transform is extern call
-
-		bool hasAnimator => a != null;
 		int hAim;
-		bool isAiming;
 
 		void Awake()
 		{
