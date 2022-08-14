@@ -217,7 +217,19 @@ namespace LeMinhHuy.Character
 		public void SetTargetLookDirection(Vector3 faceDirection, float lerpFactor = 20f)
 		{
 			overrideFacing = true;
+
 			t.forward = Vector3.Lerp(t.forward, faceDirection, Time.deltaTime * lerpFactor);
+		}
+
+		//Delete me
+		public void SetTargetLookAngleWithOffset(float desiredAngle, float lerpFactor = 20f)
+		{
+			overrideFacing = true;
+
+			const float angleOffset = 10f;
+			var yAng = t.rotation.eulerAngles.y;
+			yAng = Mathf.LerpAngle(yAng, desiredAngle + angleOffset, Time.deltaTime * lerpFactor);
+			t.rotation = Quaternion.Euler(0, yAng, 0);
 		}
 
 		void HandleCameraRotation()

@@ -42,7 +42,7 @@ namespace LeMinhHuy.Character
 
 		void Start()
 		{
-			Debug.Assert(weaponMount != null, "Set unit's weapon mount");
+			Debug.Assert(weaponMount != null, "MUST set unit's weapon mount point (gun holding hand)");
 			health = maxHealth;
 		}
 	}

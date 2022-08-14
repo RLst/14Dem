@@ -13,28 +13,31 @@ namespace LeMinhHuy.Character
 
 		[SerializeField] float aimSensitivity = 0.4f;
 		[SerializeField] float aimLayerWeight = 0.5f;   //Animator layer weight
+		[SerializeField] float aimRotationOffset = 14f;
+		[SerializeField] float aimSmoothing = 10f;
 
 		PlayerInputRelay input;
 		ThirdPersonController tpc;
-		WeaponController sc;
+		WeaponController weaponController;
 		Animator a;
 		Transform t;    //Cache to improve performance as transform is extern call
 
 		bool hasAnimator => a != null;
 		int hAim;
-		private float smoothWeight;
+		bool isAiming;
 
 		void Awake()
 		{
 			t = transform;
 			input = GetComponent<PlayerInputRelay>();
 			tpc = GetComponent<ThirdPersonController>();
-			sc = GetComponent<WeaponController>();
+			weaponController = GetComponent<WeaponController>();
 			a = GetComponent<Animator>();
 		}
 
 		void Start()
 		{
+			Debug.Assert(a != null, "Animator not found");
 			hAim = Animator.StringToHash("Aim");
 		}
 
@@ -44,27 +47,35 @@ namespace LeMinhHuy.Character
 
 			if (input.aim)
 			{
-				tpc.OverrideAimSensitivity(aimSensitivity);
-
-				//Handle locked player facing while aiming
-				Vector3 yEqualizedAimWorldPos = sc.aimWorldPosition;
-				yEqualizedAimWorldPos.y = t.position.y;
-				Vector3 lookDirection = (yEqualizedAimWorldPos - t.position).normalized;
-				tpc.SetTargetLookDirection(lookDirection);
-
-				if (hasAnimator)
-				{
-					// smoothWeight = Mathf.Lerp(smoothWeight, aimLayerWeight, Time.deltaTime * 20f);
-					a.SetBool(hAim, true);
-				}
+				Aim();
 			}
 			else
 			{
 				if (hasAnimator)
 				{
-					// smoothWeight = Mathf.Lerp(smoothWeight, 0, Time.deltaTime * 20f);
 					a.SetBool(hAim, false);
 				}
+			}
+		}
+
+		void Aim()
+		{
+			tpc.OverrideAimSensitivity(aimSensitivity);
+
+			//Handle locked player facing while aiming
+			Vector3 aimWorldPositionFlattened = weaponController.aimWorldPosition;
+			aimWorldPositionFlattened.y = t.position.y;
+			Vector3 lookDirection = (aimWorldPositionFlattened - t.position).normalized;
+
+			//Apply offset
+			var quat = Quaternion.Euler(0, aimRotationOffset, 0);
+			lookDirection = quat * lookDirection;
+
+			tpc.SetTargetLookDirection(lookDirection, aimSmoothing);
+
+			if (hasAnimator)
+			{
+				a.SetBool(hAim, true);
 			}
 		}
 	}

@@ -87,9 +87,8 @@ namespace LeMinhHuy
 			//Guard; Can not pause in game
 			if (!isMatchBegan) return;
 
-			if (Input.GetKeyDown(KeyCode.Escape))
-
 			// if (input.pause)
+			if (Input.GetKeyDown(KeyCode.Escape))
 			{
 				if (!isPaused)
 					usm.Stack(pauseState);
