@@ -24,49 +24,36 @@ Bot.Retreat(), Find all teammates within a specified radius, move to the average
 
 AI Logic
 ==========
-Entry:
+Entry - ActSel: [P]
+	Seq: Retreat
+		Cond: if health is low
+		Act: Retreat() to teammates
 
-Seq: Retreat
-	Cond: if health is low
-	Act: Retreat() to teammates
+	Seq: Targeting [P]
+		Cond: if there is a new target that's in view
+		Sel: [P]
+			Seq:
+				Cond:if there is no current target
+				Act: Set new target as current target
+			Seq: [P]
+				Cond: if the new target is in shooting range
+				Act: set new target as current target with a delay [P]
 
-Seq: Targeting
-	Cond: if there is a new target that's in view
-	Sel:
+	Seq: Chase or Reload or Attack
+		Cond: if there is a current target
 		Seq:
-			Cond:if there is no current target
-			Act: Set new target as current target
-		Seq:
-			Cond: if the new target is in shooting range
-			Act: set new target as current target with a delay
+			Cond: if current target is in range
+				Seq: Attack/Reload
+					Cond: if not enough ammo
+					Act: Reload()
+			Act: Shoot()
+		Act: Chase()
 
-Seq: Chase or Reload or Attack
-	Cond: if there is a current target
-	Seq:
-		Cond: if current target is in range
-			Seq: Attack/Reload
-				Cond: if not enough ammo
-				Act: Reload()
-		Act: Shoot()
-	Act: Chase()
+	Act: Wander()
+		(if Health is good, no new targets, no current target)
+			//Navigate towards the average of all enemies + random direction every 3 seconds
+			//Minimum move distance, max movedistance, max random angle
 
-Act: Wander()
-	(if Health is good, no new targets, no current target)
-		//Navigate towards the average of all enemies + random direction every 3 seconds
-		//Minimum move distance, max movedistance, max random angle
-
-
-	Look for a closer enemy than the current one and wait a short time before switching to the new one
-Attack target enemy
-
-1. Attack enemy
-2.
-
-Entry
-	Selector
-
-		MoveRandomSeq; Moves slightly towards average of enemy team + random angle
-			Walk slightly to a random direction + toward enemy team
 
 
 Architecture
