@@ -14,7 +14,8 @@ namespace LeMinhHuy.Character
 		[ReadOnlyField] Weapon currentWeapon;
 
 		//Properties
-		bool isSwappingWeapons => swapWeaponTimer > 0;
+		public bool isSwappingWeapons => swapWeaponTimer > 0;
+		public bool currentWeaponHasAmmo => currentWeapon.canFire;
 
 		//Events
 		public UnityEvent onChangeWeapon;

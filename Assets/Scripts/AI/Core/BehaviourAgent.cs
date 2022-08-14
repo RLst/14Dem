@@ -40,7 +40,7 @@ namespace LeMinhHuy.AI.Core
 			return false;
 		}
 
-		void Awake()
+		protected virtual void Awake()
 		{
 			agent = GetComponent<NavMeshAgent>();
 
@@ -53,7 +53,7 @@ namespace LeMinhHuy.AI.Core
 			entry?.OnAwaken();
 		}
 
-		void Start()
+		protected virtual void Start()
 		{
 			entry?.OnInitiate();
 

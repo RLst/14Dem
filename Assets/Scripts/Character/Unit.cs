@@ -13,6 +13,13 @@ namespace LeMinhHuy.Character
 
 		public Team team = Team.South;
 		public Transform weaponMount;
+		internal Team opposingTeam
+		{
+			get
+			{
+				return team == Team.South ? Team.North : Team.South;
+			}
+		}
 
 		[Header("Events")]
 		public UnityEvent onKill;

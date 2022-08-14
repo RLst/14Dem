@@ -36,31 +36,33 @@ Bot.Retreat(), Find all teammates within a specified radius, move to the average
 AI Logic
 ==========
 Entry - ActSel: [P]
-	Seq: Retreat
-		Cond: if health is low
-		Act: Retreat() to teammates
+v	Seq: Retreat
+v		Cond: isHealthLow: if health is low
+v		Act: Retreat() to teammates
 
 	Seq: Targeting [P]
-		Cond: if there is a new target that's in view
+v		Cond: if there is a new target that's in view
 		Sel: [P]
 			Seq:
-				Cond:if there is no current target
-				Act: Set new target as current target
-			Seq: [P]
-				Cond: if the new target is within shooting range
-				Act: set new target as current target with a delay [P]
+v				Inv+Cond:if there is no current target
+v				Act: Set new target as current target
+v			Act: if new target in shooting range set as current target with delay
+			//Combine all these into one node
+x			Seq: [P]
+vx				Cond: if the new target is within shooting range
+x				Act: set new target as current target with a delay [P]
 
 	Seq: Chase or Reload or Attack
-		Cond: if there is a current target
-		Seq:
-			Cond: if current target is in range
-				Seq: Attack/Reload
-					Cond: if not enough ammo
+v		Cond: if there is a current target
+			Seq: if current target in range and in view then chase
+	v			Cond: if current target is in range and in view
+				Seq: if not enough ammo then reload
+	v				Inv+Cond: if not enough ammo
 					Act: Reload()
-			Act: Shoot()
-		Act: Chase()
+				Act: Shoot()
+			Act: Chase()
 
-	Act: Wander()
+	Act: Hunt()
 		(if Health is good, no new targets, no current target)
 			//Navigate towards the average of all enemies + random direction every 3 seconds
 			//Minimum move distance, max movedistance, max random angle

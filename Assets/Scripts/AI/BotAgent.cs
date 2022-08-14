@@ -1,10 +1,28 @@
+using System.Linq;
 using LeMinhHuy.AI.Core;
+using LeMinhHuy.Character;
 using UnityEngine;
 
 namespace LeMinhHuy.AI
 {
+	[RequireComponent(typeof(Unit))]
 	public abstract class BotAgent : BehaviourAgent
 	{
+		public Unit[] allUnits;
+		public Unit[] allies;  //units of the same team
+		public Unit[] enemies;
+		public Unit unit;
+
+		protected override void Start()
+		{
+			base.Start();
+
+			unit = GetComponent<Unit>();
+			allUnits = FindObjectsOfType<Unit>();
+			allies = allUnits.Where(x => x.team == this.unit.team).ToArray();
+			enemies = allUnits.Where(x => x.team == this.unit.opposingTeam).ToArray();
+		}
+
 		protected virtual void Retreat()
 		{
 

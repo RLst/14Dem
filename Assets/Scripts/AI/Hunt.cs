@@ -9,11 +9,11 @@ namespace LeMinhHuy.AI
 		float wanderDist;
 		float huntSpeed;
 
-		public Hunt(float arriveDist = 1f, float huntSpeed = 3f, float wanderDist = 5f)
+		public Hunt(float arriveDist = 1f, float huntSpeed = 3f, float huntDist = 5f)
 		{
 			this.arriveDist = arriveDist;
 			this.huntSpeed = huntSpeed;
-			this.wanderDist = wanderDist;
+			this.wanderDist = huntDist;
 		}
 
 		public override NodeState OnExecute()
@@ -39,6 +39,7 @@ namespace LeMinhHuy.AI
 		{
 			var wander = new Vector3(Random.Range(-wanderDist, wanderDist), 0, Random.Range(-wanderDist, wanderDist));
 			var destination = transform.position + wander;
+			owner.agent.speed = huntSpeed;
 			owner.agent.SetDestination(destination);
 			// Debug.Log("findign new path:" + destination);
 		}
