@@ -40,7 +40,7 @@ namespace LeMinhHuy.AI
 
 			//If there is one then save to local blackboard
 			owner.SetData("newTarget", newTarget);
-			Debug.Log(owner.name + ": New target detected in FOV");
+			// Debug.Log(owner.name + ": New target detected in FOV");
 			return NodeState.Success;
 		}
 	}

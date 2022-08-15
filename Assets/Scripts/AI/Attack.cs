@@ -19,7 +19,7 @@ namespace LeMinhHuy.AI
 		{
 			aimController.Aim();	//TODO: need to be able to pass in a position
 			weaponController.FireWeapon();
-			Debug.Log(owner.name + ": shooting");
+			// Debug.Log(owner.name + ": shooting");
 			return state = NodeState.Success;
 		}
 	}

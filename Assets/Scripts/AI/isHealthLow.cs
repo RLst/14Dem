@@ -20,7 +20,7 @@ namespace LeMinhHuy.AI
 			state = NodeState.Failure;
 			if (unit.health < lowHealthThreshold)
 			{
-				Debug.Log(owner.name + ": Low Health");
+				// Debug.Log(owner.name + ": Low Health");
 				state = NodeState.Success;
 			}
 			return state;

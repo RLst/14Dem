@@ -17,7 +17,7 @@ namespace LeMinhHuy.AI
 			}
 
 			owner.SetData("currentTarget", newTarget);
-			Debug.Log(owner.name + ": new target set!");
+			// Debug.Log(owner.name + ": new target set!");
 			return NodeState.Success;
 		}
 	}

@@ -33,7 +33,7 @@ namespace LeMinhHuy.AI
 				//Check if in shooting range
 				if (Vector3.SqrMagnitude(newTarget.transform.position - transform.position) < sqrShootingRange)
 				{
-					Debug.Log(owner.name + ": target within shooting range");
+					// Debug.Log(owner.name + ": target within shooting range");
 					//Set as current target after a delay
 					pending = delay;
 					state = NodeState.Pending;
@@ -47,7 +47,7 @@ namespace LeMinhHuy.AI
 				{
 					//delay done! set current target
 					owner.SetData("currentTarget", newTarget);
-					Debug.Log(owner.name + ": delay done. setting new target");
+					// Debug.Log(owner.name + ": delay done. setting new target");
 					state = NodeState.Pending;
 				}
 			}

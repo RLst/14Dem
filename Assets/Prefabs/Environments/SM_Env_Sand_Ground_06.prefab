@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 33855487235952504}
   - component: {fileID: 23904020999810740}
   - component: {fileID: 64739854141352792}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: SM_Env_Sand_Ground_06
   m_TagString: Untagged
   m_Icon: {fileID: 0}

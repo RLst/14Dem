@@ -17,11 +17,15 @@ namespace LeMinhHuy.Character
 		[SerializeField] LayerMask aimLayerMask;
 		[ReadOnlyField] AimCamera aimCamera;
 
+		[Space]
+		[SerializeField] Transform debug;
+
 		//Properties
 		//Aim target world position; Where I'm aiming at
 		public RaycastHit? target { get; private set; }
 		bool hasAnimator => a != null;
 		bool hasInput => input != null;
+		public bool isAiming { get; private set; } = false;
 
 		//Members
 		PlayerInputRelay input;
@@ -66,22 +70,36 @@ namespace LeMinhHuy.Character
 			else if (hasAnimator)
 			{
 				a.SetBool(hAim, false);
+				isAiming = false;
 			}
+		}
+
+		void LateUpdate()
+		{
+			isAiming = false;
 		}
 
 		public void Aim(Vector3? desiredTarget = null)
 		{
 			tpc.OverrideAimSensitivity(aimSensitivity);
+			isAiming = true;    //TEMP: To try and fix AI overriding aim controller
 
-			//Aim via hitscan
-			const float RAYCAST_DIST = 1000f;
-			var screenCenter = new Vector2(Screen.width * 0.5f, Screen.height * 0.5f);
-			var shootRay = mainCam.ScreenPointToRay(screenCenter);
-			if (Physics.Raycast(shootRay, out RaycastHit hit, RAYCAST_DIST, aimLayerMask))
+			if (!unit.isAIControlled)	//TEMP
 			{
-				target = hit;
+				//Aim via hitscan
+				const float RAYCAST_DIST = 1000f;
+				var screenCenter = new Vector2(Screen.width * 0.5f, Screen.height * 0.5f);
+				var shootRay = mainCam.ScreenPointToRay(screenCenter);
+				if (Physics.Raycast(shootRay, out RaycastHit hit, RAYCAST_DIST, aimLayerMask))
+				{
+					target = hit;
+					if (debug != null) debug.position = hit.point;
+				}
+				else
+				{
+					target = null;
+				}
 			}
-			target = null;
 
 			//Face player correctly
 			if (target.HasValue)

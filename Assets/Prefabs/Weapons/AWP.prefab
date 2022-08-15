@@ -99,6 +99,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5731297250995633681, guid: 7a340818853804c299146d18c74dd442,
         type: 3}
+      propertyPath: <damage>k__BackingField
+      value: 40
+      objectReference: {fileID: 0}
+    - target: {fileID: 5731297250995633681, guid: 7a340818853804c299146d18c74dd442,
+        type: 3}
       propertyPath: onFire.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgument
       value: 
       objectReference: {fileID: 11400000, guid: b5f92b4c620a446b6a94029086336551,

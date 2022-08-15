@@ -165,7 +165,8 @@ MonoBehaviour:
   aimSmoothing: 50
   aimLayerMask:
     serializedVersion: 2
-    m_Bits: 1
+    m_Bits: 257
+  debug: {fileID: 0}
 --- !u!114 &2244326114042627163
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -182,6 +183,7 @@ MonoBehaviour:
   weaponPrefabs:
   - {fileID: 5731297250995633681, guid: 7a340818853804c299146d18c74dd442, type: 3}
   - {fileID: 5783558100610587141, guid: b6a431cc2b77843539103394f8f43736, type: 3}
+  pfxBlood: {fileID: 166404, guid: 78e1c8c5b281b8b439229473779ac9aa, type: 3}
   onChangeWeapon:
     m_PersistentCalls:
       m_Calls:
@@ -211,9 +213,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isBot: 0
+  CrouchSpeed: 0.2
   WalkSpeed: 3
   SprintSpeed: 8
-  CrouchSpeed: 0.2
   RotationSmoothTime: 0.12
   SpeedChangeRate: 10
   JumpHeight: 1.5

@@ -63,13 +63,15 @@ namespace LeMinhHuy.Character
 			return false;
 		}
 
-		public void Fire(bool dealsDamage = true)
+		//Returns true if gun can be fired
+		//TEMP: dont' return bool, really bad
+		public bool Fire(bool dealsDamage = true)
 		{
-			if (!canFire) return;
+			if (!canFire) return false;
 			if (!TrySpendAmmo())
 			{
 				onEmptyMagazine.Invoke();    //Click click!
-				return;
+				return false;
 			}
 
 			//Firing! Start fire timer
@@ -82,7 +84,7 @@ namespace LeMinhHuy.Character
 				StartCoroutine(GunFlash());
 			}
 
-			if (!dealsDamage) return;
+			if (!dealsDamage) return true;
 
 			//Weapon projected hitscan damage + hit particle generation
 			if (Physics.Raycast(muzzle.position, muzzle.forward, out RaycastHit hit, range, shootableLayerMask))
@@ -97,9 +99,11 @@ namespace LeMinhHuy.Character
 				if (hitPFX != null)
 				{
 					var particle = Instantiate(hitPFX, hit.point, hit.transform.rotation);
+					print("weapon.fire");
 					Destroy(particle, 1f);  //BAD
 				}
 			}
+			return true;
 		}
 
 		public void Reload()

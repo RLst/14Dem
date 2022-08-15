@@ -269,6 +269,7 @@ namespace LeMinhHuy
 		public void EndMatch()
 		{
 			isMatchInProgress = false;
+			Cursor.lockState = CursorLockMode.None;
 
 			const float slowTime = 0.3f;
 			Time.timeScale = slowTime;

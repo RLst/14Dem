@@ -14,7 +14,7 @@ namespace LeMinhHuy.AI
 		public override NodeState OnExecute()
 		{
 			weaponController.ReloadWeapon();
-			Debug.Log(owner.name + ": reloading");
+			// Debug.Log(owner.name + ": reloading");
 			return state = NodeState.Success;
 		}
 	}

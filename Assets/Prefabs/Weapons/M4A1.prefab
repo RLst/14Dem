@@ -85,7 +85,7 @@ MonoBehaviour:
   gunFlashPFX: {fileID: 1204018496501685895}
   gunFlashDuration: 0.15
   maxAmmoCapacity: 30
-  <damage>k__BackingField: 5
+  <damage>k__BackingField: 10
   fireRate: 1000
   reloadTime: 1
   range: 50

@@ -4,7 +4,7 @@ namespace LeMinhHuy.Character
 {
 	//Attach to unit body parts + colliders downstream
 	//Sends damage to the core damage
-	public class UnitBodyPart : MonoBehaviour, IDamageable
+	public class UnitLimb : MonoBehaviour, IDamageable
 	{
 		[Range(0f, 10f)]
 		[SerializeField] float damageMultiplier = 1f;   //ie. Limbs = 0.6, Body = 1, Head = 4

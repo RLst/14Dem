@@ -13,6 +13,8 @@ namespace LeMinhHuy.Character
 		[SerializeField] Weapon[] weaponPrefabs;
 		[ReadOnlyField] Weapon currentWeapon;
 
+		[SerializeField] GameObject pfxBlood;
+
 		//Properties
 		public bool isSwappingWeapons => swapWeaponTimer > 0;
 		public bool currentWeaponHasAmmo => currentWeapon.canFire;
@@ -84,12 +86,14 @@ namespace LeMinhHuy.Character
 
 		public void FireWeapon()    //AI friendly
 		{
-			if (isSwappingWeapons) return;
-
-			if (!unit.isAIControlled && !input.aim) return;   //can only shoot while aiming
+			if (isSwappingWeapons) return;	//Cannot fire while swapping weapons
+			if (!ac.isAiming) return;	//Can only fire while aiming
+			if (!currentWeapon.canFire) return;	//Can only fire if the gun is ready
 
 			//TEMP: Because the animation rigging system is faulty, we let this controller do damage instead
-			currentWeapon?.Fire(dealsDamage: !controllerDealsDamage);
+			if (currentWeapon != null)
+				if (currentWeapon.Fire(dealsDamage: !controllerDealsDamage) == false)
+					return;
 
 			if (controllerDealsDamage && ac.target.HasValue)
 			{
@@ -97,11 +101,14 @@ namespace LeMinhHuy.Character
 				var damageable = ac.target.Value.collider.GetComponent<IDamageable>();
 				if (damageable != null)
 				{
+					//HIT FLESH
 					damageable.TakeDamage(currentWeapon.damage);
+					var pfx = Instantiate(pfxBlood, ac.target.Value.point, ac.target.Value.transform.rotation);
+					Destroy(pfx, 1f);
 				}
 
-				//hit particle
-				if (currentWeapon.hitPFX != null)
+				//HIT INANIMATE
+				else if (currentWeapon.hitPFX != null)
 				{
 					var particle = Instantiate(currentWeapon.hitPFX, ac.target.Value.point, ac.target.Value.transform.rotation);
 					Destroy(particle, 1f);  //BAD

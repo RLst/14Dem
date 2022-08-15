@@ -28,7 +28,7 @@ namespace LeMinhHuy.Character
 		}
 
 		[Header("Events")]
-		public UnitEvent onKill;
+		// public UnitEvent onKill;
 
 		//Members
 		BehaviourAgent behaviourAgent;
@@ -43,11 +43,12 @@ namespace LeMinhHuy.Character
 
 		public void Kill()
 		{
+			// onKill.Invoke(this);
 			//Activate ragdoll
 			//apply bullet force to body
 			//disable animators
-
-			onKill.Invoke(this);
+			//TEMP
+			Destroy(this.gameObject);
 		}
 
 		void Awake()
