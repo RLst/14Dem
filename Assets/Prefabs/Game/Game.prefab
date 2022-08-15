@@ -51,7 +51,7 @@ MonoBehaviour:
   TeamTwoNumBots: 5
   TeamOneDifficulty: 0
   TeamTwoDifficulty: 1
-  MatchLength: 7.5
+  MatchLength: 5
   playerPrefab: {fileID: 4795927667208176789, guid: 2e739b8c75f35a244bb800cf399ca66a,
     type: 3}
   aggressivePrefab: {fileID: 5736587883454047154, guid: 916dc769de469c4438fa08cf047b923b,

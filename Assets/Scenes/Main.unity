@@ -11114,11 +11114,6 @@ PrefabInstance:
       objectReference: {fileID: 1838179360}
     - target: {fileID: 1433707406586417027, guid: 9fd5dbcf512a2bb41ae7ac99652ddb2f,
         type: 3}
-      propertyPath: MatchLength
-      value: 0.1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1433707406586417027, guid: 9fd5dbcf512a2bb41ae7ac99652ddb2f,
-        type: 3}
       propertyPath: teamOneSpawnArea
       value: 
       objectReference: {fileID: 492345117}
@@ -57288,7 +57283,7 @@ MonoBehaviour:
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
     GateFit: 2
-    m_SensorSize: {x: 1.9217687, y: 1}
+    m_SensorSize: {x: 1.5755274, y: 1}
   m_Transitions:
     m_BlendHint: 0
     m_InheritPosition: 0
