@@ -1,0 +1,13 @@
+Brainstorm_UI
+
+
+Options menu:
+
+txt: Options
+Each team...
+Bots: slider
+Difficulty: dropdown
+
+Match length: int slider
+
+Back button

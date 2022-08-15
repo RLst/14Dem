@@ -326,6 +326,7 @@ GameObject:
   - component: {fileID: 3255715044180364000}
   - component: {fileID: 3255715044180364001}
   - component: {fileID: 3255715044180364013}
+  - component: {fileID: 6853964435437969073}
   m_Layer: 5
   m_Name: GameCanvas
   m_TagString: Untagged
@@ -430,6 +431,24 @@ MonoBehaviour:
   Description: 
   activateObjects: []
   deactivateObjects: []
+--- !u!114 &6853964435437969073
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3255715044180364002}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2161c4f023eb936489e9e3af213881b3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  UIupdateInterval: 0.1
+  teamOneName: {fileID: 3255715043682867602}
+  teamTwoName: {fileID: 3255715044940786416}
+  teamOneScore: {fileID: 3255715044857873497}
+  teamTwoScore: {fileID: 3255715043435764409}
+  roundTime: {fileID: 840405263655179775}
 --- !u!1 &3255715044431211658
 GameObject:
   m_ObjectHideFlags: 0

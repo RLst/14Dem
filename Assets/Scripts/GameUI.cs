@@ -6,7 +6,7 @@ namespace LeMinhHuy
 {
 	public class GameUI : MonoBehaviour
 	{
-		[SerializeField] float UIupdateInterval = 0.1f;	//Reduce CPU
+		[SerializeField] float UIupdateInterval = 0.1f; //Reduce CPU
 		[Space]
 		public TextMeshProUGUI teamOneName;
 		public TextMeshProUGUI teamTwoName;
@@ -16,31 +16,32 @@ namespace LeMinhHuy
 
 		WaitForSeconds updateIntervalWait;
 		GameController game;
-
 		void Awake()
 		{
 			game = FindObjectOfType<GameController>();
 			updateIntervalWait = new WaitForSeconds(UIupdateInterval);
 		}
-		// IEnumerator Start()
-		// {
-		// 	while (true)
-		// 	{
-		// 		// if (!game.isMatchInProgress)
-		// 		// 	yield break;
 
+		// void Update()
+		// {
 		// 		teamOneScore.text = game.teamOneKills.ToString();
 		// 		teamTwoScore.text = game.teamTwoKills.ToString();
-		// 		roundTime.text = game.matchTimeLeft.ToString();
-		// 		yield return updateIntervalWait;
-		// 	}
+		// 		roundTime.text = Mathf.RoundToInt(game.matchTimeLeft).ToString();
 		// }
 
-		void Update()
+		IEnumerator Start()
 		{
-				teamOneScore.text = game.teamOneKills.ToString();
-				teamTwoScore.text = game.teamTwoKills.ToString();
-				roundTime.text = Mathf.RoundToInt(game.matchTimeLeft).ToString();
+			while (true)
+			{
+				if (game.isMatchInProgress)
+				{
+					teamOneScore.text = game.teamOneKills.ToString();
+					teamTwoScore.text = game.teamTwoKills.ToString();
+					roundTime.text = Mathf.RoundToInt(game.matchTimeLeft).ToString();
+				}
+
+				yield return updateIntervalWait;
+			}
 		}
 	}
 }

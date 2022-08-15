@@ -16,7 +16,17 @@ namespace LeMinhHuy
 		//Save the current game data ie. use after UI adjust
 		public void Save()
 		{
-			Save(gameData);
+			var save = new GameData()
+			{
+				teamOne = TeamOne,
+				teamOneNumBots = TeamOneNumBots,
+				teamOneDifficulty = TeamOneDifficulty,
+				teamTwo = TeamTwo,
+				teamTwoNumBots = TeamTwoNumBots,
+				teamTwoDifficulty = TeamTwoDifficulty,
+				matchLength = MatchLength,
+			};
+			Save(save);
 		}
 
 		public void Save(GameData gameData)

@@ -22,7 +22,7 @@ namespace LeMinhHuy
 		public int TeamTwoNumBots = 5;  //Adjustable in UI
 		public Difficulty TeamOneDifficulty = Difficulty.Passive;   //Adjustable in UI
 		public Difficulty TeamTwoDifficulty = Difficulty.Aggressive;    //Adjustable in UI
-		public float MatchLength = 7.5f;    //Adjustable in UI
+		public float MatchLength = 5f;    //Adjustable in UI
 
 		[Header("Prefabs")]
 		public GameObject playerPrefab;
@@ -97,9 +97,11 @@ namespace LeMinhHuy
 
 			input = FindObjectOfType<PlayerInputRelay>();
 			usm = GetComponent<UltraStateMachine>();
+
+			HandleConfigLoad();
 		}
 
-		void Start()
+		void HandleConfigLoad()
 		{
 			//Try loading the config..
 			if (!Load())
@@ -117,6 +119,17 @@ namespace LeMinhHuy
 					matchData = new List<MatchData>(),
 				};
 				Save(gameData);
+			}
+			else
+			{
+				//Sync game data with vars
+				TeamOne = gameData.teamOne;
+				TeamOneNumBots = gameData.teamOneNumBots;
+				TeamOneDifficulty = gameData.teamOneDifficulty;
+				TeamTwo = gameData.teamTwo;
+				TeamTwoNumBots = gameData.teamTwoNumBots;
+				TeamTwoDifficulty = gameData.teamTwoDifficulty;
+				MatchLength = gameData.matchLength;
 			}
 		}
 
@@ -155,7 +168,7 @@ namespace LeMinhHuy
 
 		public void BeginMatch()
 		{
-			print("begin match");
+			// print("begin match");
 
 			SpawnAndSetPlayer();
 			SpawnAndSetAIUnits();
@@ -170,17 +183,26 @@ namespace LeMinhHuy
 
 		private void SpawnAndSetPlayer()
 		{
+			//Randomize team
+			var random = Random.Range(0,2);
+			var spawnArea = random == 0 ? teamOneSpawnArea : teamTwoSpawnArea;
+
 			//Spawn
 			var flattenInsideUnitSphere = Random.insideUnitSphere;
 			flattenInsideUnitSphere.y = 0;
-			var spawnPosition = teamOneSpawnArea.transform.position + flattenInsideUnitSphere * teamOneSpawnArea.radius;
+			var spawnPosition = spawnArea.transform.position + flattenInsideUnitSphere * spawnArea.radius;
 			var player = Instantiate(playerPrefab, spawnPosition, Quaternion.LookRotation(flattenInsideUnitSphere)).GetComponent<Unit>();
-
-			//Set team
-			player.team = TeamOne;
+			player.team = random == 0 ? TeamOne : TeamTwo;
 
 			//Register
-			teamOneUnits.Add(player);
+			if (player.team == Team.South)
+			{
+				teamOneUnits.Add(player);
+			}
+			else
+			{
+				teamTwoUnits.Add(player);
+			}
 		}
 
 		private void SpawnAndSetAIUnits()
