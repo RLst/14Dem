@@ -18,11 +18,20 @@ namespace LeMinhHuy.Character
 		[ReadOnlyField] AimCamera aimCamera;
 
 		//Properties
-		public bool isAiming { get; private set; }
+		public bool isAiming
+		{
+			get
+			{
+				if (hasInput)
+				{
+					return input.aim;
+				}
+				return false;
+			}
+		}
 		//Aim target world position; Where I'm aiming at
 		public RaycastHit? target { get; private set; }
 		bool hasAnimator => a != null;
-		bool hasAimCamera => aimCamera != null;
 		bool hasInput => input != null;
 
 		//Members
@@ -34,16 +43,20 @@ namespace LeMinhHuy.Character
 		int hAim;
 		Camera mainCam;
 		private Vector3 lookDirection;
+		Unit unit;
+
 
 		void Awake()
 		{
+			unit = GetComponent<Unit>();
 			t = transform;
 			input = GetComponent<PlayerInputRelay>();
 			tpc = GetComponent<ThirdPersonController>();
 			weaponController = GetComponent<WeaponController>();
 			a = GetComponent<Animator>();
-			aimCamera = FindObjectOfType<AimCamera>();
 			mainCam = Camera.main;
+
+			if (!unit.isAIControlled) aimCamera = FindObjectOfType<AimCamera>();
 		}
 
 		void Start()
@@ -54,10 +67,10 @@ namespace LeMinhHuy.Character
 
 		void Update()
 		{
-			if (hasAimCamera)
+			if (!unit.isAIControlled)
 				aimCamera.gameObject.SetActive(input.aim);
 
-			if (hasInput && input.aim)
+			if (!unit.isAIControlled && input.aim)
 			{
 				Aim();
 			}
@@ -67,17 +80,9 @@ namespace LeMinhHuy.Character
 			}
 		}
 
-		void LateUpdate()
-		{
-			//Reset aiming
-			isAiming = false;
-		}
-
 		public void Aim(Vector3? desiredTarget = null)
 		{
 			tpc.OverrideAimSensitivity(aimSensitivity);
-
-			isAiming = true;
 
 			//Aim via hitscan
 			const float RAYCAST_DIST = 1000f;

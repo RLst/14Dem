@@ -28,6 +28,11 @@ namespace LeMinhHuy.Controllers
 		public bool cursorLocked = true;
 		public bool cursorInputForLook = true;
 
+		void Start()
+		{
+			SetCursorState(cursorLocked);
+		}
+
 #if ENABLE_INPUT_SYSTEM && STARTER_ASSETS_PACKAGES_CHECKED
 		//Messages sent by PlayerInput
 		public void OnLook(InputValue value)
@@ -74,7 +79,7 @@ namespace LeMinhHuy.Controllers
 		{
 			SetCursorState(cursorLocked);
 		}
-		void SetCursorState(bool active)
+		public void SetCursorState(bool active)
 		{
 			Cursor.lockState = active ? CursorLockMode.Locked : CursorLockMode.None;
 		}

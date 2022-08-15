@@ -183,6 +183,7 @@ namespace LeMinhHuy.Character
 		void SetFollowVirtualCamera()
 		{
 			FindObjectOfType<ThirdPersonCamera>().cam.Follow = CinemachineCameraTarget.transform;
+			FindObjectOfType<AimCamera>().cam.Follow = CinemachineCameraTarget.transform;
 		}
 
 		void AssignAnimationIDs()

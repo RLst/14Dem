@@ -42,6 +42,8 @@ namespace LeMinhHuy
 		public UnityEvent onWin;
 		public UnityEvent onDraw;
 		public UnityEvent onLose;
+		public UnityEvent onStartGame;
+		public UnityEvent onEndGame;
 
 		//Properities
 		bool isPaused => usm.currentState == pauseState;
@@ -126,6 +128,7 @@ namespace LeMinhHuy
 			usm.Stack(gameState);
 
 			BeginMatch();
+			onStartGame.Invoke();
 		}
 
 		public void RestartGame()
@@ -254,6 +257,7 @@ namespace LeMinhHuy
 
 			//Save match data
 			AppendMatchData();
+			onEndGame.Invoke();
 		}
 
 		public void RestartMatch()

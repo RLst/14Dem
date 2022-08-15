@@ -1,3 +1,4 @@
+using LeMinhHuy.AI.Core;
 using LeMinhHuy.Events;
 using UnityEngine;
 using UnityEngine.AI;
@@ -17,6 +18,7 @@ namespace LeMinhHuy.Character
 		[SerializeField] SkinnedMeshRenderer[] unitSkins;
 
 		//Properties
+		public bool isAIControlled => behaviourAgent != null;
 		internal Team opposingTeam
 		{
 			get
@@ -27,6 +29,9 @@ namespace LeMinhHuy.Character
 
 		[Header("Events")]
 		public UnitEvent onKill;
+
+		//Members
+		BehaviourAgent behaviourAgent;
 
 		//TODO: Put damageables on limbs
 		public void TakeCoreDamage(float damage)
@@ -43,6 +48,11 @@ namespace LeMinhHuy.Character
 			//disable animators
 
 			onKill.Invoke(this);
+		}
+
+		void Awake()
+		{
+			behaviourAgent = GetComponent<BehaviourAgent>();
 		}
 
 		void Start()

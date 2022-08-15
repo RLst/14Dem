@@ -41,6 +41,7 @@ namespace LeMinhHuy.Character
 		void Start()
 		{
 			r_timeBetweenShots = 60f / fireRate;
+			gunFlashPFX.SetActive(false);
 		}
 		void Update()
 		{

@@ -90,7 +90,7 @@ MonoBehaviour:
   range: 50
   shootableLayerMask:
     serializedVersion: 2
-    m_Bits: 1
+    m_Bits: 2147483647
   onFire:
     m_PersistentCalls:
       m_Calls:

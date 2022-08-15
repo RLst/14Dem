@@ -97,6 +97,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4019344251498342196}
   - component: {fileID: 4019344251498342197}
+  - component: {fileID: 2509158222106719206}
   m_Layer: 0
   m_Name: PlayerTPSCamera
   m_TagString: Untagged
@@ -149,7 +150,7 @@ MonoBehaviour:
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
     GateFit: 2
-    m_SensorSize: {x: 1.747619, y: 1}
+    m_SensorSize: {x: 1.8317757, y: 1}
   m_Transitions:
     m_BlendHint: 0
     m_InheritPosition: 0
@@ -158,3 +159,15 @@ MonoBehaviour:
         m_Calls: []
   m_LegacyBlendHint: 0
   m_ComponentOwner: {fileID: 4019344250904352496}
+--- !u!114 &2509158222106719206
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4019344251498342091}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: efea7e5476c115f4f963846dbe91b6fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
