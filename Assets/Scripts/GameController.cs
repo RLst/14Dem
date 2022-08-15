@@ -47,7 +47,9 @@ namespace LeMinhHuy
 
 		//Properities
 		bool isPaused => usm.currentState == pauseState;
-		public float matchLenghSeconds => MatchLength * 60f;
+		float matchLengthSeconds => MatchLength * 60f;
+		public bool isMatchInProgress { get; private set; } = false;
+		public float matchTimeLeft { get; private set; }
 
 		//Data
 		GameData gameData;
@@ -60,8 +62,6 @@ namespace LeMinhHuy
 		//Members
 		PlayerInputRelay input;
 		UltraStateMachine usm;
-		bool isMatchInProgress = false;
-		private float matchTimeLeft;
 		List<Unit> teamOneUnits = new List<Unit>();
 		List<Unit> teamTwoUnits = new List<Unit>();
 		List<Unit> allUnits = new List<Unit>();
@@ -155,7 +155,7 @@ namespace LeMinhHuy
 
 			//Begin match
 			isMatchInProgress = true;
-			matchTimeLeft = matchLenghSeconds;
+			matchTimeLeft = matchLengthSeconds;
 		}
 
 		private void SpawnAndSetPlayer()

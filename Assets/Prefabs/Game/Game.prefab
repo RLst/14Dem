@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1433707406586417026}
   - component: {fileID: 1433707406586417027}
-  - component: {fileID: 1433707406586417024}
   - component: {fileID: 1433707406586417025}
   m_Layer: 0
   m_Name: Game
@@ -46,21 +45,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75dd0a895fe6c4fbc8f55cecd3fb2ffb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pauseState: {fileID: 0}
-  gameState: {fileID: 0}
-  teamOneSpawnArea: {fileID: 0}
-  teamTwoSpawnArea: {fileID: 0}
-  teamOne: 0
-  teamTwo: 1
-  teamOneNumBots: 4
-  teamTwoNumBots: 5
-  matchLengthMins: 7.5
+  TeamOne: 0
+  TeamTwo: 1
+  TeamOneNumBots: 5
+  TeamTwoNumBots: 5
+  TeamOneDifficulty: 0
+  TeamTwoDifficulty: 1
+  MatchLength: 7.5
   playerPrefab: {fileID: 4795927667208176789, guid: 2e739b8c75f35a244bb800cf399ca66a,
     type: 3}
   aggressivePrefab: {fileID: 5736587883454047154, guid: 916dc769de469c4438fa08cf047b923b,
     type: 3}
   passiveBotPrefab: {fileID: 6473933891026449513, guid: 319bae479f82ba64c9f47d9dabd943bf,
     type: 3}
+  pauseState: {fileID: 0}
+  gameState: {fileID: 0}
+  teamOneSpawnArea: {fileID: 0}
+  teamTwoSpawnArea: {fileID: 0}
   onWin:
     m_PersistentCalls:
       m_Calls: []
@@ -70,26 +71,16 @@ MonoBehaviour:
   onLose:
     m_PersistentCalls:
       m_Calls: []
+  onStartGame:
+    m_PersistentCalls:
+      m_Calls: []
+  onEndGame:
+    m_PersistentCalls:
+      m_Calls: []
   teamOneKills: 0
   teamTwoKills: 0
   teamOneDeaths: 0
   teamTwoDeaths: 0
-  teamOneDifficulty: 1
-  teamTwoDifficulty: 0
---- !u!114 &1433707406586417024
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1433707406586417028}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2161c4f023eb936489e9e3af213881b3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  teamOneScore: {fileID: 0}
-  teamTwoScore: {fileID: 0}
 --- !u!114 &1433707406586417025
 MonoBehaviour:
   m_ObjectHideFlags: 0
