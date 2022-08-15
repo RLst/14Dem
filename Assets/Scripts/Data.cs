@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using LeMinhHuy.AI;
 using LeMinhHuy.Character;
+using UnityEngine;
 
 namespace LeMinhHuy
 {
-	public class GameData
+	// [CreateAssetMenu]
+	public class GameData	// : ScriptableObject
 	{
 		public Team teamOne = Team.South;
 		public Team teamTwo = Team.North;
@@ -22,6 +24,7 @@ namespace LeMinhHuy
 	}
 
 	//Battle logs
+	[Serializable]
 	public class MatchData
 	{
 		public DateTime date;

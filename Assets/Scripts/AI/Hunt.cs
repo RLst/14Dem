@@ -40,7 +40,9 @@ namespace LeMinhHuy.AI
 			var wander = new Vector3(Random.Range(-wanderDist, wanderDist), 0, Random.Range(-wanderDist, wanderDist));
 			var destination = transform.position + wander;
 			owner.agent.speed = huntSpeed;
-			owner.agent.SetDestination(destination);
+
+			if (owner.agent.isOnNavMesh)
+				owner.agent.SetDestination(destination);
 			// Debug.Log("findign new path:" + destination);
 		}
 	}

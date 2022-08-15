@@ -45,6 +45,7 @@ namespace LeMinhHuy.AI
 			//Move towards them
 			owner.agent.SetDestination(avgPos);
 
+			Debug.Log(owner.name + ": Retreating");
 			return NodeState.Success;
 		}
 	}

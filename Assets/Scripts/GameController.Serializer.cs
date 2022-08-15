@@ -12,16 +12,18 @@ namespace LeMinhHuy
 		const string SETTINGS_FILE = "/settings.cfg";
 
 		void SetPersistentDataPath() => PERSISTENT_DATA_PATH = Application.dataPath;
-		public void Save(bool createNew = false)
+
+		//Save the current game data ie. use after UI adjust
+		public void Save()
+		{
+			Save(gameData);
+		}
+
+		public void Save(GameData gameData)
 		{
 			try
 			{
-				GameData toBeSaved = gameData;
-				if (createNew)
-				{
-					toBeSaved = new GameData(); //Will have default values
-				}
-				var savedJson = JsonUtility.ToJson(toBeSaved, prettyPrint: true);
+				var savedJson = JsonUtility.ToJson(gameData, prettyPrint: true);
 				File.WriteAllText(PERSISTENT_DATA_PATH + SETTINGS_FILE, savedJson);
 			}
 			catch (Exception e)
@@ -56,8 +58,8 @@ namespace LeMinhHuy
 					teamTwoKills = teamTwoKills,
 					teamOneDeaths = teamOneDeaths,
 					teamTwoDeaths = teamTwoDeaths,
-					teamOneDifficulty = teamOneDifficulty,
-					teamTwoDifficulty = teamTwoDifficulty,
+					teamOneDifficulty = TeamOneDifficulty,
+					teamTwoDifficulty = TeamTwoDifficulty,
 				});
 			}
 

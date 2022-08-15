@@ -1,5 +1,6 @@
 using LeMinhHuy.AI.Core;
 using LeMinhHuy.Character;
+using UnityEngine;
 
 namespace LeMinhHuy.AI
 {
@@ -13,6 +14,7 @@ namespace LeMinhHuy.AI
 		public override NodeState OnExecute()
 		{
 			weaponController.ReloadWeapon();
+			Debug.Log(owner.name + ": reloading");
 			return state = NodeState.Success;
 		}
 	}

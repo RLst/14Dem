@@ -12,11 +12,13 @@ using UnityEngine.InputSystem;
 namespace LeMinhHuy.Character
 {
 	[RequireComponent(typeof(CharacterController))]
-#if ENABLE_INPUT_SYSTEM && STARTER_ASSETS_PACKAGES_CHECKED
-	[RequireComponent(typeof(PlayerInput))]
-#endif
+	// #if ENABLE_INPUT_SYSTEM && STARTER_ASSETS_PACKAGES_CHECKED
+	// 	[RequireComponent(typeof(PlayerInput))]
+	// #endif
 	public class ThirdPersonController : MonoBehaviour
 	{
+		[SerializeField] bool isBot = false;
+
 		[Header("Player")]
 		[Tooltip("Move speed of the character in m/s")]
 		public float WalkSpeed = 3f;
@@ -61,7 +63,7 @@ namespace LeMinhHuy.Character
 
 		[Header("Cinemachine")]
 		[Tooltip("The follow target set in the Cinemachine Virtual Camera that the camera will follow")]
-		public GameObject CinemachineCameraTarget;
+		public Transform CinemachineCameraTarget;
 
 		[Tooltip("How far in degrees can you move the camera up")]
 		public float TopClamp = 70.0f;
@@ -109,7 +111,10 @@ namespace LeMinhHuy.Character
 			get
 			{
 #if ENABLE_INPUT_SYSTEM && STARTER_ASSETS_PACKAGES_CHECKED
-				return playerInput.currentControlScheme == "KeyboardMouse";
+				if (hasPlayerInput)
+					return playerInput.currentControlScheme == "KeyboardMouse";
+				else
+					return false;
 #else
 				return false;
 #endif
@@ -118,6 +123,8 @@ namespace LeMinhHuy.Character
 		bool hasAnimator => a != null;
 		bool hasNavMeshAgent => agent != null;
 		bool hasCinemachineCameraTarget => CinemachineCameraTarget != null;
+		bool hasPlayerInput => playerInput != null;
+		bool hasInput => input != null;
 
 		//Members
 #if ENABLE_INPUT_SYSTEM && STARTER_ASSETS_PACKAGES_CHECKED
@@ -139,15 +146,15 @@ namespace LeMinhHuy.Character
 
 		void Awake()
 		{
-			t = transform;
-			a = GetComponent<Animator>();
-			controller = GetComponent<CharacterController>();
-			input = GetComponent<PlayerInputRelay>();
 #if ENABLE_INPUT_SYSTEM && STARTER_ASSETS_PACKAGES_CHECKED
 			playerInput = GetComponent<PlayerInput>();
 #else
 			Debug.LogError( "Starter Assets package is missing dependencies. Please use Tools/Starter Assets/Reinstall Dependencies to fix it");
 #endif
+			input = GetComponent<PlayerInputRelay>();
+			t = transform;
+			a = GetComponent<Animator>();
+			controller = GetComponent<CharacterController>();
 			agent = GetComponent<NavMeshAgent>();
 
 			mainCamera = Camera.main.gameObject;
@@ -159,7 +166,7 @@ namespace LeMinhHuy.Character
 
 			//Set starting rotation
 			if (hasCinemachineCameraTarget)
-				cinemachineTargetYaw = CinemachineCameraTarget.transform.rotation.eulerAngles.y;
+				cinemachineTargetYaw = CinemachineCameraTarget.rotation.eulerAngles.y;
 
 			// reset our timeouts on start
 			jumpTimeoutDelta = JumpTimeout;
@@ -167,7 +174,17 @@ namespace LeMinhHuy.Character
 
 			//TEMP: Legacy thing from the starter assets
 			if (hasAnimator) a.SetFloat(hMotionSpeed, 1f);
+
+			//If a player (has player input) then set follow camera
+			if (hasInput)
+				SetFollowVirtualCamera();
 		}
+
+		void SetFollowVirtualCamera()
+		{
+			FindObjectOfType<ThirdPersonCamera>().cam.Follow = CinemachineCameraTarget.transform;
+		}
+
 		void AssignAnimationIDs()
 		{
 			hSpeedX = Animator.StringToHash("SpeedX");
@@ -221,19 +238,10 @@ namespace LeMinhHuy.Character
 			t.forward = Vector3.Lerp(t.forward, faceDirection, Time.deltaTime * lerpFactor);
 		}
 
-		//Delete me
-		public void SetTargetLookAngleWithOffset(float desiredAngle, float lerpFactor = 20f)
-		{
-			overrideFacing = true;
-
-			const float angleOffset = 10f;
-			var yAng = t.rotation.eulerAngles.y;
-			yAng = Mathf.LerpAngle(yAng, desiredAngle + angleOffset, Time.deltaTime * lerpFactor);
-			t.rotation = Quaternion.Euler(0, yAng, 0);
-		}
 
 		void HandleCameraRotation()
 		{
+			if (!hasInput) return;
 			if (!hasCinemachineCameraTarget) return;
 
 			// if there is an input and camera position is not fixed
@@ -257,6 +265,7 @@ namespace LeMinhHuy.Character
 		void HandleCrouching()
 		{
 			if (!hasAnimator) return;
+			if (!hasInput) return;
 
 			if (input.crouch)
 			{
@@ -280,7 +289,7 @@ namespace LeMinhHuy.Character
 				targetDirection = agent.desiredVelocity;
 				desiredSpeed = agent.speed;     //Slow
 			}
-			else
+			else if (hasInput)
 			{
 				//Set the desired speed
 				if (input.crouch)
@@ -377,7 +386,7 @@ namespace LeMinhHuy.Character
 				}
 
 				// Jump
-				if (input.jump && jumpTimeoutDelta <= 0.0f)
+				if (hasInput && input.jump && jumpTimeoutDelta <= 0.0f)
 				{
 					// the square root of H * -2 * G = how much velocity needed to reach desired height
 					verticalVelocity = Mathf.Sqrt(JumpHeight * -2f * Gravity);
@@ -415,7 +424,8 @@ namespace LeMinhHuy.Character
 				}
 
 				// if we are not grounded, do not jump
-				input.SetJump(false);
+				if (hasInput)
+					input.SetJump(false);
 			}
 
 			// apply gravity over time if under terminal (multiply by delta time twice to linearly speed up over time)

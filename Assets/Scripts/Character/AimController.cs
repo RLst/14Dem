@@ -10,13 +10,12 @@ namespace LeMinhHuy.Character
 	public class AimController : MonoBehaviour
 	{
 		//Inspector
-		[SerializeField] CinemachineVirtualCamera aimCamera;
-		[Space]
 		[SerializeField] float aimSensitivity = 0.4f;
 		[SerializeField] float aimLayerWeight = 0.5f;   //Animator layer weight
 		[SerializeField] float aimRotationOffset = 35f;
 		[SerializeField] float aimSmoothing = 50f;
 		[SerializeField] LayerMask aimLayerMask;
+		[ReadOnlyField] AimCamera aimCamera;
 
 		//Properties
 		public bool isAiming { get; private set; }
@@ -24,6 +23,7 @@ namespace LeMinhHuy.Character
 		public RaycastHit? target { get; private set; }
 		bool hasAnimator => a != null;
 		bool hasAimCamera => aimCamera != null;
+		bool hasInput => input != null;
 
 		//Members
 		PlayerInputRelay input;
@@ -42,6 +42,7 @@ namespace LeMinhHuy.Character
 			tpc = GetComponent<ThirdPersonController>();
 			weaponController = GetComponent<WeaponController>();
 			a = GetComponent<Animator>();
+			aimCamera = FindObjectOfType<AimCamera>();
 			mainCam = Camera.main;
 		}
 
@@ -56,7 +57,7 @@ namespace LeMinhHuy.Character
 			if (hasAimCamera)
 				aimCamera.gameObject.SetActive(input.aim);
 
-			if (input.aim)
+			if (hasInput && input.aim)
 			{
 				Aim();
 			}
@@ -66,9 +67,17 @@ namespace LeMinhHuy.Character
 			}
 		}
 
+		void LateUpdate()
+		{
+			//Reset aiming
+			isAiming = false;
+		}
+
 		public void Aim(Vector3? desiredTarget = null)
 		{
 			tpc.OverrideAimSensitivity(aimSensitivity);
+
+			isAiming = true;
 
 			//Aim via hitscan
 			const float RAYCAST_DIST = 1000f;
@@ -89,7 +98,9 @@ namespace LeMinhHuy.Character
 			}
 			else
 			{
-				lookDirection = mainCam.transform.forward;
+				Vector3 aimWorldPositionFlattened = mainCam.transform.forward;
+				aimWorldPositionFlattened.y = t.position.y;
+				lookDirection = aimWorldPositionFlattened;
 			}
 
 			//Apply slight rotational offset

@@ -12,11 +12,12 @@ namespace LeMinhHuy.AI
 			var newTarget = owner.GetData("newTarget") as Unit;
 			if (newTarget is null)
 			{
-				Debug.Log("No current target found!");
+				// Debug.Log(owner.name + ": No current target found!");
 				return NodeState.Failure;
 			}
 
 			owner.SetData("currentTarget", newTarget);
+			Debug.Log(owner.name + ": new target set!");
 			return NodeState.Success;
 		}
 	}

@@ -12,6 +12,16 @@ namespace LeMinhHuy.AI
 		public Unit[] allies;  //units of the same team
 		public Unit[] enemies;
 		public Unit unit;
+		protected WeaponController weaponController;
+		protected AimController aimController;
+
+		protected override void Awake()
+		{
+			weaponController = GetComponent<WeaponController>();
+			aimController = GetComponent<AimController>();
+
+			base.Awake();
+		}
 
 		protected override void Start()
 		{

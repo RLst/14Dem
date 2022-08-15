@@ -1,5 +1,6 @@
 using LeMinhHuy.AI.Core;
 using LeMinhHuy.Character;
+using UnityEngine;
 
 namespace LeMinhHuy.AI
 {
@@ -30,11 +31,16 @@ namespace LeMinhHuy.AI
 					newTarget = e;
 				}
 			}
+
 			if (newTarget is null)
+			{
+				// Debug.Log(owner.name + ": New target not detected in FOV");
 				return NodeState.Failure;
+			}
 
 			//If there is one then save to local blackboard
 			owner.SetData("newTarget", newTarget);
+			Debug.Log(owner.name + ": New target detected in FOV");
 			return NodeState.Success;
 		}
 	}

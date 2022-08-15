@@ -1,3 +1,4 @@
+using LeMinhHuy.Events;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Events;
@@ -8,11 +9,14 @@ namespace LeMinhHuy.Character
 	[SelectionBase]
 	public class Unit : MonoBehaviour, IHealth, ICoreDamageable, IKillable
 	{
+		//Inspector
 		[SerializeField] float maxHealth = 100;
 		[field: SerializeField] public float health { get; set; }
-
 		public Team team = Team.South;
 		public Transform weaponMount;
+		[SerializeField] SkinnedMeshRenderer[] unitSkins;
+
+		//Properties
 		internal Team opposingTeam
 		{
 			get
@@ -22,8 +26,9 @@ namespace LeMinhHuy.Character
 		}
 
 		[Header("Events")]
-		public UnityEvent onKill;
+		public UnitEvent onKill;
 
+		//TODO: Put damageables on limbs
 		public void TakeCoreDamage(float damage)
 		{
 			health -= damage;
@@ -36,15 +41,24 @@ namespace LeMinhHuy.Character
 			//Activate ragdoll
 			//apply bullet force to body
 			//disable animators
-			//
 
-			onKill.Invoke();
+			onKill.Invoke(this);
 		}
 
 		void Start()
 		{
 			Debug.Assert(weaponMount != null, "MUST set unit's weapon mount point (gun holding hand)");
 			health = maxHealth;
+			ChooseRandomSkin();
+		}
+
+		public void ChooseRandomSkin()
+		{
+			foreach (var s in unitSkins)
+			{
+				s.gameObject.SetActive(false);
+			}
+			unitSkins[Random.Range(0, unitSkins.Length)].gameObject.SetActive(true);
 		}
 	}
 }

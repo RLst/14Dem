@@ -6,7 +6,7 @@ using UnityEngine.Events;
 
 namespace LeMinhHuy.Character
 {
-	[RequireComponent(typeof(Unit), typeof(PlayerInputRelay))]
+	[RequireComponent(typeof(Unit))]
 	public class WeaponController : MonoBehaviour    //Rename to weapon controller
 	{
 		[SerializeField] bool controllerDealsDamage = false;
@@ -16,6 +16,7 @@ namespace LeMinhHuy.Character
 		//Properties
 		public bool isSwappingWeapons => swapWeaponTimer > 0;
 		public bool currentWeaponHasAmmo => currentWeapon.canFire;
+		bool hasInput => input != null;
 
 		//Events
 		public UnityEvent onChangeWeapon;
@@ -46,8 +47,11 @@ namespace LeMinhHuy.Character
 		}
 		void Update()
 		{
-			if (input.fire) FireWeapon();
-			if (input.reload) ReloadWeapon();
+			if (hasInput)
+			{
+				if (input.fire) FireWeapon();
+				if (input.reload) ReloadWeapon();
+			}
 			HandleWeaponSwitching();
 			HandleTiming();
 		}
@@ -82,10 +86,12 @@ namespace LeMinhHuy.Character
 		{
 			if (isSwappingWeapons) return;
 
+			if (!ac.isAiming) return;   //can only shoot while aiming
+
 			//TEMP: Because the animation rigging system is faulty, we let this controller do damage instead
 			currentWeapon?.Fire(dealsDamage: !controllerDealsDamage);
 
-			if (ac.isAiming && controllerDealsDamage && ac.target.HasValue)
+			if (controllerDealsDamage && ac.target.HasValue)
 			{
 				//Deal damage via hit scan
 				var damageable = ac.target.Value.collider.GetComponent<IDamageable>();
@@ -111,8 +117,8 @@ namespace LeMinhHuy.Character
 
 		void HandleWeaponSwitching()
 		{
-			if (input.nextWeapon) NextWeapon();
-			else if (input.prevWeapon) PreviousWeapon();
+			if (hasInput && input.nextWeapon) NextWeapon();
+			else if (hasInput && input.prevWeapon) PreviousWeapon();
 		}
 
 		public void NextWeapon()    //AI friendly

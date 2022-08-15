@@ -1,4 +1,5 @@
 using LeMinhHuy.Character;
+using UnityEngine;
 
 namespace LeMinhHuy.AI.Core
 {
@@ -18,11 +19,16 @@ namespace LeMinhHuy.AI.Core
 
 			//get current target
 			currentTarget = owner.GetData("currentTarget") as Unit;
-			if (currentTarget is null) return state;
+			if (currentTarget is null)
+			{
+				// Debug.Log(owner.name + ": new target set!");
+				return state;
+			}
 
 			//Chase after current target
 			owner.agent.SetDestination(currentTarget.transform.position);
 			owner.agent.speed = chaseSpeed;
+			Debug.Log(owner.name + ": Chasing");
 			return state = NodeState.Success;
 		}
 	}
