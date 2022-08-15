@@ -131,16 +131,24 @@ namespace LeMinhHuy
 			onStartGame.Invoke();
 		}
 
-		public void RestartGame()
+		public void RestartMatch()
 		{
+			//Faulty!
+
 			//Remove all players and begin match again
-			//Go backwards through the array
-			for (int i = allUnits.Count; i > 0; i--)
+			foreach (var u in allUnits)
 			{
-				var u = allUnits[i];
-				allUnits.Remove(u);
-				Destroy(u.gameObject);
+				Destroy(u);
 			}
+			allUnits.Clear();
+
+			//Go backwards through the array
+			// for (int i = allUnits.Count; i >= 0; i--)
+			// {
+			// 	var u = allUnits[i];
+			// 	allUnits.Remove(u);
+			// 	Destroy(u.gameObject);
+			// }
 
 			BeginMatch();
 		}
@@ -153,9 +161,11 @@ namespace LeMinhHuy
 			SpawnAndSetAIUnits();
 			RegisterAllUnits();
 
+			matchTimeLeft = matchLengthSeconds;
+			Time.timeScale = 1f;
+
 			//Begin match
 			isMatchInProgress = true;
-			matchTimeLeft = matchLengthSeconds;
 		}
 
 		private void SpawnAndSetPlayer()
@@ -260,7 +270,7 @@ namespace LeMinhHuy
 			onEndGame.Invoke();
 		}
 
-		public void RestartMatch()
+		public void Restart()
 		{
 			//Just reset the game for now
 			const string MAIN_GAME_SCENE_NAME = "Main";
