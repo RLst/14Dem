@@ -13,6 +13,8 @@ namespace LeMinhHuy
 		{
 			base.OnEnter(sm);
 
+			Cursor.lockState = CursorLockMode.None;
+			// Cursor.visible = true;
 			Time.timeScale = pauseTimeScale;
 		}
 
@@ -20,6 +22,8 @@ namespace LeMinhHuy
 		{
 			base.OnExit(sm);
 
+			Cursor.lockState = CursorLockMode.Locked;
+			// Cursor.visible = false;
 			Time.timeScale = 1f;
 		}
 	}
