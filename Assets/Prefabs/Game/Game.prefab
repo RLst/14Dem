@@ -1,0 +1,117 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1433707406586417028
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1433707406586417026}
+  - component: {fileID: 1433707406586417027}
+  - component: {fileID: 1433707406586417024}
+  - component: {fileID: 1433707406586417025}
+  m_Layer: 0
+  m_Name: Game
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1433707406586417026
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1433707406586417028}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1433707406586417027
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1433707406586417028}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75dd0a895fe6c4fbc8f55cecd3fb2ffb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pauseState: {fileID: 0}
+  gameState: {fileID: 0}
+  teamOneSpawnArea: {fileID: 0}
+  teamTwoSpawnArea: {fileID: 0}
+  teamOne: 0
+  teamTwo: 1
+  teamOneNumBots: 4
+  teamTwoNumBots: 5
+  matchLengthMins: 7.5
+  playerPrefab: {fileID: 4795927667208176789, guid: 2e739b8c75f35a244bb800cf399ca66a,
+    type: 3}
+  aggressivePrefab: {fileID: 5736587883454047154, guid: 916dc769de469c4438fa08cf047b923b,
+    type: 3}
+  passiveBotPrefab: {fileID: 6473933891026449513, guid: 319bae479f82ba64c9f47d9dabd943bf,
+    type: 3}
+  onWin:
+    m_PersistentCalls:
+      m_Calls: []
+  onDraw:
+    m_PersistentCalls:
+      m_Calls: []
+  onLose:
+    m_PersistentCalls:
+      m_Calls: []
+  teamOneKills: 0
+  teamTwoKills: 0
+  teamOneDeaths: 0
+  teamTwoDeaths: 0
+  teamOneDifficulty: 1
+  teamTwoDifficulty: 0
+--- !u!114 &1433707406586417024
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1433707406586417028}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2161c4f023eb936489e9e3af213881b3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  teamOneScore: {fileID: 0}
+  teamTwoScore: {fileID: 0}
+--- !u!114 &1433707406586417025
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1433707406586417028}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb60c714e7e8e46debb0febeee0dd1ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _currentStateIDX: 0
+  entryState: {fileID: 0}
+  turnStates: []
+  onExitCurrentTurn:
+    m_PersistentCalls:
+      m_Calls: []
+  onEnterNextTurn:
+    m_PersistentCalls:
+      m_Calls: []
+  onStartRound:
+    m_PersistentCalls:
+      m_Calls: []
+  debug: 0
