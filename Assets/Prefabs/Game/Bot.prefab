@@ -152,9 +152,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isBot: 0
+  CrouchSpeed: 2.5
   WalkSpeed: 3
   SprintSpeed: 8
-  CrouchSpeed: 2.5
   RotationSmoothTime: 0.12
   SpeedChangeRate: 10
   JumpHeight: 1.2
@@ -267,7 +267,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 0
-  m_Volume: 0.277
+  m_Volume: 1
   m_Pitch: 1
   Loop: 0
   Mute: 0

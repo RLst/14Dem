@@ -18,17 +18,6 @@ namespace LeMinhHuy.Character
 		[ReadOnlyField] AimCamera aimCamera;
 
 		//Properties
-		public bool isAiming
-		{
-			get
-			{
-				if (hasInput)
-				{
-					return input.aim;
-				}
-				return false;
-			}
-		}
 		//Aim target world position; Where I'm aiming at
 		public RaycastHit? target { get; private set; }
 		bool hasAnimator => a != null;

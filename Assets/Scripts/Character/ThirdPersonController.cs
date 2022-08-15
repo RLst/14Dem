@@ -20,12 +20,12 @@ namespace LeMinhHuy.Character
 		[SerializeField] bool isBot = false;
 
 		[Header("Player")]
+		public float CrouchSpeed = 1f;
 		[Tooltip("Move speed of the character in m/s")]
 		public float WalkSpeed = 3f;
 
 		[Tooltip("Sprint speed of the character in m/s")]
 		public float SprintSpeed = 8f;
-		public float CrouchSpeed = 1f;
 
 		[Tooltip("How fast the character turns to face movement direction")]
 		[Range(0.0f, 0.3f)]
@@ -268,7 +268,7 @@ namespace LeMinhHuy.Character
 			if (!hasAnimator) return;
 			if (!hasInput) return;
 
-			if (input.crouch)
+			if (!input.sprint && input.crouch)
 			{
 				crouchSmoothWeight = Mathf.Lerp(crouchSmoothWeight, crouchLayerWeight, Time.deltaTime * 20f);
 				a.SetLayerWeight(crouchLayerID, crouchSmoothWeight);
@@ -293,11 +293,11 @@ namespace LeMinhHuy.Character
 			else if (hasInput)
 			{
 				//Set the desired speed
-				if (input.crouch)
+				if (!input.sprint && input.crouch)
 				{
 					desiredSpeed = CrouchSpeed;
 				}
-				else if (input.sprint)
+				else if (!input.aim && input.sprint)
 				{
 					desiredSpeed = SprintSpeed;
 				}

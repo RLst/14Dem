@@ -86,7 +86,7 @@ namespace LeMinhHuy.Character
 		{
 			if (isSwappingWeapons) return;
 
-			if (!ac.isAiming) return;   //can only shoot while aiming
+			if (!unit.isAIControlled && !input.aim) return;   //can only shoot while aiming
 
 			//TEMP: Because the animation rigging system is faulty, we let this controller do damage instead
 			currentWeapon?.Fire(dealsDamage: !controllerDealsDamage);

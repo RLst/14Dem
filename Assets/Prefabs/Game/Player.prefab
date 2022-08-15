@@ -213,7 +213,7 @@ MonoBehaviour:
   isBot: 0
   WalkSpeed: 3
   SprintSpeed: 8
-  CrouchSpeed: 2.5
+  CrouchSpeed: 0.2
   RotationSmoothTime: 0.12
   SpeedChangeRate: 10
   JumpHeight: 1.5
@@ -231,7 +231,7 @@ MonoBehaviour:
   BottomClamp: -30
   CameraAngleOverride: 0
   LockCameraPosition: 0
-  crouchLayerWeight: 0.5
+  crouchLayerWeight: 1
 --- !u!114 &2244326114042627164
 MonoBehaviour:
   m_ObjectHideFlags: 0
